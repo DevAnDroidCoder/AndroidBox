@@ -4,7 +4,6 @@ import static com.dark.androidbox.Utilities.DarkUtilities.ShowMessage;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import com.dark.androidbox.Adpaters.CodeAdapter;
 import com.dark.androidbox.Adpaters.Codes;
 import com.dark.androidbox.R;
 import com.dark.androidbox.System.NodeEvents;
-import com.dark.androidbox.databinding.FragmentEditorBinding;
 import com.gyso.treeview.GysoTreeView;
 import com.gyso.treeview.TreeViewEditor;
 import com.gyso.treeview.layout.CompactRightTreeLayoutManager;
@@ -33,12 +31,11 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
     public GysoTreeView treeView;
     public TreeViewEditor editor;
+    public ArrayList<HashMap<String, Object>> dataList = new ArrayList<>();
     CodeAdapter adapter;
     TreeLayoutManager treeLayoutManager;
     private NodeModel<Codes> parentToRemoveChildren = null;
     private NodeModel<Codes> targetNode;
-
-    public ArrayList<HashMap<String, Object>> dataList = new ArrayList<>();
 
 
     public EditorFragment() {
@@ -130,6 +127,7 @@ public class EditorFragment extends Fragment implements NodeEvents {
         //set data
         adapter.setTreeModel(treeModel);
     }
+
     @Override
     public void NodeOnLongClick() {
 

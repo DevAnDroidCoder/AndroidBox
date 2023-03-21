@@ -26,17 +26,16 @@ import java.util.HashMap;
 public class CodeAdapter extends TreeViewAdapter<Codes> {
 
 
-    ArrayList<HashMap<String, Object>> rootList = new ArrayList<>();
-
-    NodeEvents events ;
-
     public Activity ctx;
+    ArrayList<HashMap<String, Object>> rootList = new ArrayList<>();
+    NodeEvents events;
 
-    public CodeAdapter(Activity activity, NodeEvents events, ArrayList<HashMap<String, Object>> dataList){
+    public CodeAdapter(Activity activity, NodeEvents events, ArrayList<HashMap<String, Object>> dataList) {
         this.ctx = activity;
         this.events = events;
         this.rootList = dataList;
     }
+
     @Override
     public TreeViewHolder<Codes> onCreateViewHolder(@NonNull ViewGroup viewGroup, NodeModel<Codes> model) {
         CodeNodesBinding nodeBinding = CodeNodesBinding.inflate(LayoutInflater.from(viewGroup.getContext()), viewGroup, false);
