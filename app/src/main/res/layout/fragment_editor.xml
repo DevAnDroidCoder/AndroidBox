@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.EditorFragment">
+
+    <com.gyso.treeview.GysoTreeView
+        android:id="@+id/base_tree_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1E1E1E" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/quick_tabs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        app:checkedButton="@id/node"
+        app:singleSelection="true"
+        tools:ignore="RelativeOverlap">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/code"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="Code" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/node"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="Node" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/preview"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Preview" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+</RelativeLayout>

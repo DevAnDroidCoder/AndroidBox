@@ -1,0 +1,12 @@
+Services :
+
+  [ Dialog Manager ]
+
+    Local Path : <$Project Path/app/src/main/java/com/dark/androidbox/Managers/>
+
+    Credit :
+        Github Name > Siddhesh Sonar { Me :) }
+    ;
+  ;
+
+;

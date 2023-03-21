@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Android Box</string>
+    <string name="setup_btn_str">Set-Up System</string>
+    <string name="setup_file_str">Set-Up File Permissions</string>
+    <string name="next">Next</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

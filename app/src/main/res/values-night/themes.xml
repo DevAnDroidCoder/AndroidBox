@@ -1,0 +1,27 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.AndroidBox" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/system1_200</item>
+        <item name="colorPrimaryVariant">@color/system1_700</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/system3_200</item>
+        <item name="colorSecondaryVariant">@color/system3_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:navigationBarColor">
+            @android:color/transparent
+        </item>
+
+        <!-- Optional: set to transparent if your app is drawing behind the status bar. -->
+        <item name="android:statusBarColor">
+            @android:color/transparent
+        </item>
+
+        <!-- Optional: set the status bar light and content dark. -->
+        <item name="android:windowLightStatusBar">
+            false
+        </item>
+    </style>
+
+</resources>

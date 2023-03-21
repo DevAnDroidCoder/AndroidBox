@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="75dp"
+    android:layout_margin="12dp"
+    android:background="@drawable/code_item_bg">
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="22dp"
+        app:srcCompat="@drawable/box" />
+
+    <TextView
+        android:id="@+id/label_codeBlock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="69dp"
+        android:fontFamily="@font/abel"
+        android:text="OnCreate"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="22dp"
+        app:srcCompat="@drawable/baseline_more_horiz_24" />
+
+</RelativeLayout>

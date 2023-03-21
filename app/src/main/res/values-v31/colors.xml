@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="system1_200">@android:color/system_accent1_200</color>
+    <color name="system1_500">@android:color/system_accent1_500</color>
+    <color name="system1_700">@android:color/system_accent1_700</color>
+    <color name="system3_200">@android:color/system_accent3_200</color>
+    <color name="system3_700">@android:color/system_accent1_700</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="system33">@android:color/system_accent2_200</color>
+    <color name="checked">@android:color/system_accent1_200</color>
+    <color name="unchecked">#FF6969</color>
+    <color name="color_logger">#000000</color>
+</resources>
