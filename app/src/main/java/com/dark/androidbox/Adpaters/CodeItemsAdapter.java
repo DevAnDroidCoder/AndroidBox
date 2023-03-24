@@ -57,7 +57,7 @@ public class CodeItemsAdapter extends RecyclerView.Adapter<CodeItemsAdapter.View
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                events.NodeListItemsOnClick(pos, list_data);
+
             }
         });
 

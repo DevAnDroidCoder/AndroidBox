@@ -1,6 +1,8 @@
 package com.dark.androidbox.Adpaters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,11 +10,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.FragmentManager;
 
+import com.dark.androidbox.Fragments.EditorFragment;
 import com.dark.androidbox.R;
 import com.dark.androidbox.System.NodeEvents;
+import com.dark.androidbox.builder.LogicBuilder;
 import com.dark.androidbox.databinding.CodeNodesBinding;
 import com.gyso.treeview.adapter.DrawInfo;
 import com.gyso.treeview.adapter.TreeViewAdapter;
@@ -22,18 +25,22 @@ import com.gyso.treeview.model.NodeModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class CodeAdapter extends TreeViewAdapter<Codes> {
 
 
     public Activity ctx;
-    ArrayList<HashMap<String, Object>> rootList = new ArrayList<>();
+    ArrayList<HashMap<String, Object>> rootList;
     NodeEvents events;
 
-    public CodeAdapter(Activity activity, NodeEvents events, ArrayList<HashMap<String, Object>> dataList) {
+    FragmentManager manager;
+
+    public CodeAdapter(FragmentManager manager, Activity activity, NodeEvents events, ArrayList<HashMap<String, Object>> dataList) {
         this.ctx = activity;
         this.events = events;
         this.rootList = dataList;
+        this.manager = manager;
     }
 
     @Override
@@ -42,6 +49,7 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
         return new TreeViewHolder<>(nodeBinding.getRoot(), model);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull TreeViewHolder<Codes> holder) {
         View items = holder.getView();
@@ -50,7 +58,7 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
 
         TextView label = items.findViewById(R.id.label_codeBlock);
 
-        RecyclerView node_item = items.findViewById(R.id.node_items);
+        TextView txt_info = items.findViewById(R.id.txt_info);
 
         TextView node_id = items.findViewById(R.id.node_id);
 
@@ -66,12 +74,43 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
             }
         });
 
-        node_item.setAdapter(new CodeItemsAdapter(ctx, rootList, events));
-
-        node_item.setLayoutManager(new LinearLayoutManager(node_item.getContext(), LinearLayoutManager.VERTICAL, false));
 
         label.setText(blockData.label);
+        if (blockData.itemId == 0) {
+            txt_info.setText(setUpClassInfo(new LogicBuilder(EditorFragment.sampleCode())));
+        } else {
+            txt_info.setText("None !");
+        }
         node_id.setText("Node -> ".concat(String.valueOf(blockData.getItemId())));
+
+        Log.d("System Info", String.valueOf(new LogicBuilder(EditorFragment.sampleCode()).objType));
+    }
+
+    public String setUpClassInfo(LogicBuilder builder) {
+
+        String Type, Returns, Inputs = "null", data;
+
+        String superclass = builder.getClassExtends(builder.getClasses().get(0));
+        if (superclass != null) {
+            List<String> interfaces = builder.getClassImplements();
+            if (!interfaces.isEmpty()) {
+                StringBuilder sampleData;
+                sampleData = new StringBuilder();
+                for (int i = 0; i < interfaces.size(); i++) {
+                    sampleData.append(", ").append(interfaces.get(i));
+                }
+                Inputs = "Super Class : ".concat(superclass).concat("\n").concat("Implementations ").concat(sampleData.substring(1));
+            }
+
+        } else {
+            System.out.println("MyClass does not extend any class");
+        }
+        Type = "Type : Class";
+        Returns = "Returns : Null";
+
+        data = Type.concat("\n").concat(Returns).concat("\n").concat(Inputs);
+
+        return data;
     }
 
     @Override

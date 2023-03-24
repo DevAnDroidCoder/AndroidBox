@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:background="@drawable/code_node_bg"
@@ -32,11 +33,61 @@
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/node_items"
+    <LinearLayout
+        android:id="@+id/card_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp" />
+        android:layout_marginHorizontal="12dp"
+        android:backgroundTint="#131313"
+        android:orientation="vertical"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="12dp">
+
+        <TextView
+            android:id="@+id/txt_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:fontFamily="@font/abel"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="12dp"
+                android:backgroundTint="#388EBBFF"
+                android:paddingHorizontal="8dp"
+                android:text="Code"
+                android:textColor="@color/white"
+                android:textSize="16dp"
+                app:strokeColor="#FF8EBBFF"
+                app:strokeWidth="2dp" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="12dp"
+                android:backgroundTint="#38FF8E8E"
+                android:paddingHorizontal="8dp"
+                android:text="Delete"
+                android:textColor="@color/white"
+                android:textSize="16dp"
+                app:strokeColor="#FFFF8E8E"
+                app:strokeWidth="2dp" />
+        </RelativeLayout>
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/node_id"

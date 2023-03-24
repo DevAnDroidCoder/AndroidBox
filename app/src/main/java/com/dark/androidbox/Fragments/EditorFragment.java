@@ -1,7 +1,5 @@
 package com.dark.androidbox.Fragments;
 
-import static com.dark.androidbox.Utilities.DarkUtilities.ShowMessage;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +12,8 @@ import com.dark.androidbox.Adpaters.CodeAdapter;
 import com.dark.androidbox.Adpaters.Codes;
 import com.dark.androidbox.R;
 import com.dark.androidbox.System.NodeEvents;
+import com.dark.androidbox.builder.LogicBuilder;
+import com.google.android.material.button.MaterialButton;
 import com.gyso.treeview.GysoTreeView;
 import com.gyso.treeview.TreeViewEditor;
 import com.gyso.treeview.layout.CompactRightTreeLayoutManager;
@@ -25,21 +25,117 @@ import com.gyso.treeview.model.TreeModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 public class EditorFragment extends Fragment implements NodeEvents {
 
     public GysoTreeView treeView;
     public TreeViewEditor editor;
+
+    public MaterialButton code, node;
     public ArrayList<HashMap<String, Object>> dataList = new ArrayList<>();
+    public LogicBuilder builder = new LogicBuilder(sampleCode());
     CodeAdapter adapter;
     TreeLayoutManager treeLayoutManager;
     private NodeModel<Codes> parentToRemoveChildren = null;
     private NodeModel<Codes> targetNode;
 
-
     public EditorFragment() {
+    }
 
+    //For Testing Purposes Only
+    public static String sampleCode() {
+        return "import java.util.ArrayList;\n" +
+                "import java.util.regex.Matcher;\n" +
+                "import java.util.regex.Pattern;\n" +
+                "\n" +
+                "public class JavaCodeParser extends Fragment implements NodeEvents, Siddhesh, Data, Evenets {\n" +
+                "    private String codeString;\n" +
+                "    private ArrayList<String> classes;\n" +
+                "    private ArrayList<String> functions;\n" +
+                "    private ArrayList<String> variables;\n" +
+                "    \n" +
+                "    public JavaCodeParser(String codeString) {\n" +
+                "        this.codeString = codeString;\n" +
+                "        this.classes = new ArrayList<String>();\n" +
+                "        this.functions = new ArrayList<String>();\n" +
+                "        this.variables = new ArrayList<String>();\n" +
+                "        \n" +
+                "        extractClasses();\n" +
+                "        extractFunctions();\n" +
+                "        extractVariables();\n" +
+                "    }\n" +
+                "    \n" +
+                "    private void extractClasses() {\n" +
+                "        Pattern classPattern = Pattern.compile(\"(public|private|protected)?\\\\s*(class)\\\\s+(\\\\w+)\");\n" +
+                "        Matcher matcher = classPattern.matcher(codeString);\n" +
+                "        while (matcher.find()) {\n" +
+                "            classes.add(matcher.group(3));\n" +
+                "        }\n" +
+                "    }\n" +
+                "    \n" +
+                "    private void extractFunctions() {\n" +
+                "        Pattern functionPattern = Pattern.compile(\"(public|private|protected)?\\\\s*(static)?\\\\s*(\\\\w+)\\\\s*(\\\\(.*?\\\\))\");\n" +
+                "        Matcher matcher = functionPattern.matcher(codeString);\n" +
+                "        while (matcher.find()) {\n" +
+                "            functions.add(matcher.group(3));\n" +
+                "        }\n" +
+                "    }\n" +
+                "    \n" +
+                "    private void extractVariables() {\n" +
+                "        Pattern variablePattern = Pattern.compile(\"(public|private|protected)?\\\\s*(static)?\\\\s*(\\\\w+)\\\\s+(\\\\w+)(\\\\s*=.*?)?;\");\n" +
+                "        Matcher matcher = variablePattern.matcher(codeString);\n" +
+                "        while (matcher.find()) {\n" +
+                "            variables.add(matcher.group(4));\n" +
+                "        }\n" +
+                "    }\n" +
+                "    \n" +
+                "    public String getCodeClass(String className) {\n" +
+                "        String patternString = \"(public|private|protected)?\\\\s*(class)\\\\s+\" + className + \"\\\\s*(\\\\{.*?\\\\})\";\n" +
+                "        Pattern pattern = Pattern.compile(patternString, Pattern.DOTALL);\n" +
+                "        Matcher matcher = pattern.matcher(codeString);\n" +
+                "        if (matcher.find()) {\n" +
+                "            return matcher.group(3);\n" +
+                "        }\n" +
+                "        return \"\";\n" +
+                "    }\n" +
+                "    \n" +
+                "    public String getFunctionInfo(String functionName) {\n" +
+                "        String patternString = \"(public|private|protected)?\\\\s*(static)?\\\\s*(\\\\w+)\\\\s+\" + functionName + \"\\\\s*(\\\\(.*?\\\\))\\\\s*(\\\\{.*?\\\\})\";\n" +
+                "        Pattern pattern = Pattern.compile(patternString, Pattern.DOTALL);\n" +
+                "        Matcher matcher = pattern.matcher(codeString);\n" +
+                "        if (matcher.find()) {\n" +
+                "            return matcher.group(0);\n" +
+                "        }\n" +
+                "        return \"\";\n" +
+                "    }\n" +
+                "    \n" +
+                "    public ArrayList<String> getFunctionInput(String functionName) {\n" +
+                "        ArrayList<String> inputList = new ArrayList<String>();\n" +
+                "        String patternString = \"(public|private|protected)?\\\\s*(static)?\\\\s*(\\\\w+)\\\\s+\" + functionName + \"\\\\s*(\\\\(.*?\\\\))\\\\s*(\\\\{.*?\\\\})\";\n" +
+                "        Pattern pattern = Pattern.compile(patternString, Pattern.DOTALL);\n" +
+                "        Matcher matcher = pattern.matcher(codeString);\n" +
+                "        if (matcher.find()) {\n" +
+                "            String inputString = matcher.group(4);\n" +
+                "            Pattern inputPattern = Pattern.compile(\"(\\\\w+)\\\\s+(\\\\w+)\");\n" +
+                "            Matcher inputMatcher = inputPattern.matcher(inputString);\n" +
+                "            while (inputMatcher.find()) {\n" +
+                "                inputList.add(inputMatcher.group(2));\n" +
+                "            }\n" +
+                "        }\n" +
+                "        return inputList;\n" +
+                "    }\n" +
+                "    \n" +
+                "    public ArrayList<String> getClasses() {\n" +
+                "        return classes;\n" +
+                "    }\n" +
+                "    \n" +
+                "    public ArrayList<String> getFunctions() {\n" +
+                "        return functions;\n" +
+                "    }\n" +
+                "    \n" +
+                "    public ArrayList<String> getVariables() {\n" +
+                "        return variables;\n" +
+                "   \n";
     }
 
     @Override
@@ -53,9 +149,29 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
         treeView = root.findViewById(R.id.base_tree_view);
 
-        LoadData();
+        code = root.findViewById(R.id.code);
+        node = root.findViewById(R.id.node);
 
-        adapter = new CodeAdapter(getActivity(), this, dataList);
+        initNODE();
+        Logic();
+
+        return root;
+    }
+
+    public void Logic() {
+
+        code.setOnClickListener(v -> {
+
+        });
+
+        node.setOnClickListener(view -> {
+
+        });
+
+    }
+
+    public void initNODE() {
+        adapter = new CodeAdapter(getActivity().getSupportFragmentManager(), getActivity(), this, dataList);
 
         treeLayoutManager = getTreeLayoutManager();
 
@@ -67,8 +183,6 @@ public class EditorFragment extends Fragment implements NodeEvents {
         editor = treeView.getEditor();
 
         //editor.requestMoveNodeByDragging(true);
-
-        return root;
     }
 
     private TreeLayoutManager getTreeLayoutManager() {
@@ -110,19 +224,22 @@ public class EditorFragment extends Fragment implements NodeEvents {
     }
 
     private void setData(CodeAdapter adapter) {
+
         //root
-        NodeModel<Codes> root_node = new NodeModel<>(new Codes(0, "Root Node"));
-        TreeModel<Codes> treeModel = new TreeModel<>(root_node);
+
+        NodeModel<Codes> classSample = new NodeModel<>(new Codes(0, builder.getClasses().get(0)));
+        TreeModel<Codes> treeModel = new TreeModel<>(classSample);
 
         //child nodes
-        NodeModel<Codes> child_node1 = new NodeModel<>(new Codes(1, "Child Node 1"));
+        NodeModel<Codes> functionSample = new NodeModel<>(new Codes(1, builder.getFunctions().get(0)));
+        NodeModel<Codes> varSample = new NodeModel<>(new Codes(2, builder.getVariables().get(0)));
 
         //build relationship
-        treeModel.addNode(root_node, child_node1);
+        treeModel.addNode(classSample, functionSample, varSample);
 
         //mark
-        parentToRemoveChildren = root_node;
-        targetNode = child_node1;
+        parentToRemoveChildren = classSample;
+        targetNode = functionSample;
 
         //set data
         adapter.setTreeModel(treeModel);
@@ -131,29 +248,5 @@ public class EditorFragment extends Fragment implements NodeEvents {
     @Override
     public void NodeOnLongClick() {
 
-    }
-
-    @Override
-    public void NodeListItemsOnClick(int pos, ArrayList<HashMap<String, Object>> data) {
-        ShowMessage(getContext(), new StringBuilder(Objects.requireNonNull(data.get(pos).get("data")).toString()));
-    }
-
-    @Override
-    public void NodeListItemsOnLongClick() {
-
-    }
-
-    public void LoadData() {
-        addData(dataList);
-    }
-
-    public void addData(ArrayList<HashMap<String, Object>> list_data) {
-        DataArray(list_data, "data", "Click Me");
-    }
-
-    public void DataArray(ArrayList<HashMap<String, Object>> list_data, String Key, String Data) {
-        HashMap<String, Object> data = new HashMap<>();
-        data.put(Key, Data);
-        list_data.add(data);
     }
 }

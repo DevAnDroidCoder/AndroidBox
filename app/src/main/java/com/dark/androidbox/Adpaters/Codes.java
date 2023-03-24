@@ -2,7 +2,9 @@ package com.dark.androidbox.Adpaters;
 
 public class Codes {
     public int itemId;
-    public String label;
+    public String label, type;
+
+    public StringBuilder data;
 
     public Codes(int itemId, String label) {
         this.itemId = itemId;
