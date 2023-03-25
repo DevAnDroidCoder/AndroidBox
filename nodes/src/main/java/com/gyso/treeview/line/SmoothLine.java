@@ -6,10 +6,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.util.Log;
 import android.view.View;
 
-import android.widget.Toast;
 import com.gyso.treeview.adapter.DrawInfo;
 import com.gyso.treeview.adapter.TreeViewHolder;
 import com.gyso.treeview.cache_pool.PointPool;
@@ -68,11 +66,9 @@ public class SmoothLine extends BaseLine {
         PointF startPoint,point1,endPoint,point2;
         if(holderLayoutType== TreeLayoutManager.LAYOUT_TYPE_HORIZON_RIGHT){
             startPoint = PointPool.obtain(fromView.getRight(),(fromView.getTop()+fromView.getBottom())/2f);
-            point1 = PointPool.obtain(startPoint.x+DensityUtils.dp2px(context,15)+50,startPoint.y);
+            point1 = PointPool.obtain(startPoint.x+DensityUtils.dp2px(context,15),startPoint.y);
             endPoint =  PointPool.obtain(toView.getLeft(),(toView.getTop()+toView.getBottom())/2f);
             point2 = PointPool.obtain(startPoint.x,endPoint.y);
-            
-        //  Toast.makeText(fromView.getContext(), "Start Cor >> " + point1.toString(), Toast.LENGTH_LONG).show();
 
         }else if(holderLayoutType== TreeLayoutManager.LAYOUT_TYPE_HORIZON_LEFT){
             startPoint = PointPool.obtain(fromView.getLeft(),(fromView.getTop()+fromView.getBottom())/2f);
@@ -109,8 +105,6 @@ public class SmoothLine extends BaseLine {
                 point1.x,point1.y,
                 point2.x,point2.y,
                 endPoint.x,endPoint.y);
-
-        Log.e("X Y Pos >> ", " X " + String.valueOf(startPoint.x).concat(" Y " + startPoint.y));
         //do not forget release
         PointPool.free(startPoint);
         PointPool.free(point1);

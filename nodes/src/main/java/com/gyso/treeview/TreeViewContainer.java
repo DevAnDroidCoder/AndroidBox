@@ -302,7 +302,7 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
             drawDragBackGround(childHolder.getView());
             if(isDraggingNodeMode && childHolder.getView().getTag(R.id.edit_and_dragging) == IS_EDIT_DRAGGING){
                //Is editing and dragging, so not draw line.
-               drawTreeLine(node);
+                drawTreeLine(node);
                continue;
             }
             BaseLine adapterDrawLine = adapter.onDrawLine(drawInfo);
@@ -415,7 +415,6 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
             }else{
                 //recover
                 dragBlock.smoothRecover(releasedChild);
-               // mTreeModel.removeNode(releasedChildHolderNode);
             }
             dragBlock.setDragging(false);
             releasedChild.setElevation(Z_NOR);

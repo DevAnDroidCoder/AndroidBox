@@ -1,7 +1,10 @@
 package com.dark.androidbox.Fragments;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +19,12 @@ import com.dark.androidbox.builder.LogicBuilder;
 import com.google.android.material.button.MaterialButton;
 import com.gyso.treeview.GysoTreeView;
 import com.gyso.treeview.TreeViewEditor;
+import com.gyso.treeview.layout.BoxDownTreeLayoutManager;
+import com.gyso.treeview.layout.BoxRightTreeLayoutManager;
 import com.gyso.treeview.layout.CompactRightTreeLayoutManager;
+import com.gyso.treeview.layout.TableRightTreeLayoutManager;
 import com.gyso.treeview.layout.TreeLayoutManager;
+import com.gyso.treeview.line.AngledLine;
 import com.gyso.treeview.line.BaseLine;
 import com.gyso.treeview.line.SmoothLine;
 import com.gyso.treeview.model.NodeModel;
@@ -32,15 +39,13 @@ public class EditorFragment extends Fragment implements NodeEvents {
     public TreeViewEditor editor;
 
     public MaterialButton code, node;
-    public ArrayList<HashMap<String, Object>> dataList = new ArrayList<>();
     public LogicBuilder builder = new LogicBuilder(sampleCode());
     CodeAdapter adapter;
     TreeLayoutManager treeLayoutManager;
     private NodeModel<Codes> parentToRemoveChildren = null;
     private NodeModel<Codes> targetNode;
 
-    public EditorFragment() {
-    }
+    public EditorFragment() {}
 
     //For Testing Purposes Only
     public static String sampleCode() {
@@ -48,7 +53,7 @@ public class EditorFragment extends Fragment implements NodeEvents {
                 "import java.util.regex.Matcher;\n" +
                 "import java.util.regex.Pattern;\n" +
                 "\n" +
-                "public class JavaCodeParser extends Fragment implements NodeEvents, Siddhesh, Data, Evenets {\n" +
+                "public class JavaCodeParser extends Fragment implements NodeEvents, Siddhi, Data, Events {\n" +
                 "    private String codeString;\n" +
                 "    private ArrayList<String> classes;\n" +
                 "    private ArrayList<String> functions;\n" +
@@ -171,7 +176,7 @@ public class EditorFragment extends Fragment implements NodeEvents {
     }
 
     public void initNODE() {
-        adapter = new CodeAdapter(getActivity().getSupportFragmentManager(), getActivity(), this, dataList);
+        adapter = new CodeAdapter(requireActivity().getSupportFragmentManager(), getActivity(), this);
 
         treeLayoutManager = getTreeLayoutManager();
 
@@ -182,15 +187,15 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
         editor = treeView.getEditor();
 
-        //editor.requestMoveNodeByDragging(true);
+        editor.requestMoveNodeByDragging(true);
     }
 
     private TreeLayoutManager getTreeLayoutManager() {
         int space_50dp = 30;
         int space_20dp = 20;
         BaseLine line = getLine();
-        //return new BoxRightTreeLayoutManager(this,space_50dp,space_20dp,line);
-        //return new BoxDownTreeLayoutManager(this,space_50dp,space_20dp,line);
+        //return new BoxRightTreeLayoutManager(getContext(),space_50dp,space_20dp,line);
+        //return new BoxDownTreeLayoutManager(getContext(),space_50dp,space_20dp,line);
         //return new BoxLeftTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new BoxUpTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new BoxHorizonLeftAndRightLayoutManager(this,space_50dp,space_20dp,line);
@@ -198,14 +203,14 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
 
         //TODO !!!!! the layoutManagers below are just for test don't use in your projects. Just for test now
-        //return new TableRightTreeLayoutManager(this,space_50dp,space_20dp,line);
+        return new TableRightTreeLayoutManager(getContext(),space_50dp,space_20dp,line);
         //return new TableLeftTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new TableDownTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new TableUpTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new TableHorizonLeftAndRightLayoutManager(this,space_50dp,space_20dp,line);
         //return new TableVerticalUpAndDownLayoutManager(this,space_50dp,space_20dp,line);
 
-        return new CompactRightTreeLayoutManager(getContext(), space_50dp, space_20dp, line);
+        //return new CompactRightTreeLayoutManager(getContext(), space_50dp, space_20dp, line);
         //return new CompactLeftTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new CompactHorizonLeftAndRightLayoutManager(this,space_50dp,space_20dp,line);
         //return new CompactDownTreeLayoutManager(this,space_50dp,space_20dp,line);
@@ -217,25 +222,42 @@ public class EditorFragment extends Fragment implements NodeEvents {
     }
 
     private BaseLine getLine() {
-        return new SmoothLine(Color.parseColor("#8EBBFF"), 2);
+        //return new SmoothLine(Color.parseColor("#8EBBFF"), 2);
         //return new StraightLine(Color.parseColor("#055287"),2);
         //return new DashLine(Color.parseColor("#F1286C"),3);
-        //return new AngledLine();
+        return new AngledLine();
     }
 
     private void setData(CodeAdapter adapter) {
 
+        NodeModel<Codes> functionSample = null;
+        NodeModel<Codes> rootVariables;
         //root
 
+
+
+        for (int i = 0; i < builder.getVariables().size(); i++) {
+
+        }
+
         NodeModel<Codes> classSample = new NodeModel<>(new Codes(0, builder.getClasses().get(0)));
+
         TreeModel<Codes> treeModel = new TreeModel<>(classSample);
 
         //child nodes
-        NodeModel<Codes> functionSample = new NodeModel<>(new Codes(1, builder.getFunctions().get(0)));
         NodeModel<Codes> varSample = new NodeModel<>(new Codes(2, builder.getVariables().get(0)));
 
+        int cac = 0;
+
+        for (int i = 0; i < builder.getFunctions().size(); i++) {
+            if (i == 5){
+                break;
+            }
+            functionSample = new NodeModel<>(new Codes(i, builder.getFunctions().get(i)));
+            treeModel.addNode(classSample, functionSample, varSample);
+        }
         //build relationship
-        treeModel.addNode(classSample, functionSample, varSample);
+        //treeModel.addNode(classSample, varSample);
 
         //mark
         parentToRemoveChildren = classSample;

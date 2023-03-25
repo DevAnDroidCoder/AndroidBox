@@ -2,11 +2,16 @@ package com.dark.androidbox.Adpaters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Color;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,15 +36,13 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
 
 
     public Activity ctx;
-    ArrayList<HashMap<String, Object>> rootList;
     NodeEvents events;
 
     FragmentManager manager;
 
-    public CodeAdapter(FragmentManager manager, Activity activity, NodeEvents events, ArrayList<HashMap<String, Object>> dataList) {
+    public CodeAdapter(FragmentManager manager, Activity activity, NodeEvents events) {
         this.ctx = activity;
         this.events = events;
-        this.rootList = dataList;
         this.manager = manager;
     }
 
@@ -56,6 +59,8 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
 
         LinearLayout head_node = items.findViewById(R.id.head_node);
 
+        RelativeLayout cardInfo = items.findViewById(R.id.card_info);
+
         TextView label = items.findViewById(R.id.label_codeBlock);
 
         TextView txt_info = items.findViewById(R.id.txt_info);
@@ -66,10 +71,12 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
 
         final Codes blockData = nodeObj.value;
 
+        cardInfo.setVisibility(View.GONE);
+
         head_node.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                events.NodeOnLongClick();
+                cardInfo.setVisibility(!(cardInfo.getVisibility() == View.VISIBLE) ? View.VISIBLE : View.GONE);
                 return false;
             }
         });
@@ -77,7 +84,19 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
 
         label.setText(blockData.label);
         if (blockData.itemId == 0) {
-            txt_info.setText(setUpClassInfo(new LogicBuilder(EditorFragment.sampleCode())));
+
+            String data = setUpClassInfo(new LogicBuilder(EditorFragment.sampleCode()));
+
+            SpannableStringBuilder colorant = new SpannableStringBuilder(data);
+
+            SetUpColor(colorant, data, "Type", "#8EBBFF");
+            SetUpColor(colorant, data, "Returns", "#8EBBFF");
+            SetUpColor(colorant, data, "Super Class", "#8EBBFF");
+            SetUpColor(colorant, data, "Implementations", "#8EBBFF");
+            SetUpColor(colorant, data, "Null", "#FF8E8E");
+
+            txt_info.setText(colorant);
+
         } else {
             txt_info.setText("None !");
         }
@@ -110,11 +129,19 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
 
         data = Type.concat("\n").concat(Returns).concat("\n").concat(Inputs);
 
-        return data;
+        return String.valueOf(data);
     }
 
     @Override
     public BaseLine onDrawLine(DrawInfo drawInfo) {
         return null;
+    }
+
+    public void SetUpColor(SpannableStringBuilder colorant, String data, String word, String color) {
+        ForegroundColorSpan txtColor1 = new ForegroundColorSpan(Color.parseColor(color));
+
+        int start1 = data.indexOf(word);
+        int end1 = start1 + word.length();
+        colorant.setSpan(txtColor1, start1, end1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 }

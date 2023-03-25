@@ -34,7 +34,6 @@ import java.util.Map;
 public class DragBlock {
     private final List<View> tmp;
     private volatile boolean isDragging;
-    public boolean isDraggingMain;
     private final TreeViewContainer container;
     private final Map<View, ViewBox> originPositionMap;
     private final OverScroller mScroller;
@@ -79,16 +78,14 @@ public class DragBlock {
     }
 
     public void drag(int dx, int dy){
-        if (isDraggingMain){
-            if(!mScroller.isFinished()){
-                return;
-            }
-            this.isDragging = true;
-            for (int i = 0; i < tmp.size(); i++) {
-                View view = tmp.get(i);
-                view.offsetLeftAndRight(dx);
-                view.offsetTopAndBottom(dy);
-            }
+        if(!mScroller.isFinished()){
+            return;
+        }
+        this.isDragging = true;
+        for (int i = 0; i < tmp.size(); i++) {
+            View view = tmp.get(i);
+            view.offsetLeftAndRight(dx);
+            view.offsetTopAndBottom(dy);
         }
     }
 

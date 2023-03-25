@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.util.Log;
 import android.view.View;
 import com.gyso.treeview.adapter.DrawInfo;
 import com.gyso.treeview.adapter.TreeViewHolder;
@@ -38,7 +37,7 @@ public class BaseLine {
         //set paint
         mPaint.reset();
         mPath.reset();
-        mPaint.setColor(Color.BLUE);
+        mPaint.setColor(Color.MAGENTA);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(DensityUtils.dp2px(context,3));
         mPaint.setAntiAlias(true);
@@ -47,8 +46,6 @@ public class BaseLine {
         int fromCenterY = (fromView.getTop()+fromView.getBottom())/2;
         int toCenterX = (toView.getLeft()+toView.getRight())/2;
         int toCenterY = (toView.getTop()+toView.getBottom())/2;
-
-
 
         mPath.moveTo(fromCenterX, fromCenterY);
         mPath.lineTo(toCenterX, toCenterY);

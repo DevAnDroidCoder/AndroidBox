@@ -34,7 +34,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/card_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
@@ -53,6 +52,7 @@
             android:textSize="18sp" />
 
         <RelativeLayout
+            android:id="@+id/card_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
