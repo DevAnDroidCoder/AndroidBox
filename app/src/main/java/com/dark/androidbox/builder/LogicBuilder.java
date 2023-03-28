@@ -2,6 +2,8 @@ package com.dark.androidbox.builder;
 
 import android.util.Log;
 
+import com.dark.androidbox.Managers.CodeManager.CodeManager;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,7 +18,7 @@ public class LogicBuilder {
     private ArrayList<String> functions;
 
 
-//    0 = Class
+    //    0 = Class
 //    1 = Methods
 //    2 = Variables
     private ArrayList<String> variables;
@@ -144,5 +146,10 @@ public class LogicBuilder {
 
     public ArrayList<String> getVariables() {
         return variables;
+    }
+
+    public StringBuilder ObjectGenerator(CodeManager manager) {
+        manager.setUpCode();
+        return manager.getCode();
     }
 }

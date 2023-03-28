@@ -12,6 +12,7 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.TouchDelegate;
@@ -19,6 +20,8 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
 import androidx.customview.widget.ViewDragHelper;
 
@@ -300,7 +303,7 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
             }
             drawInfo.setToHolder(childHolder);
             drawDragBackGround(childHolder.getView());
-            if(isDraggingNodeMode && childHolder.getView().getTag(R.id.edit_and_dragging) == IS_EDIT_DRAGGING){
+            if(!isDraggingNodeMode && childHolder.getView().getTag(R.id.edit_and_dragging) == IS_EDIT_DRAGGING){
                //Is editing and dragging, so not draw line.
                 drawTreeLine(node);
                continue;
@@ -334,6 +337,7 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
         View view = treeViewHolder.getView();
         view.setElevation(Z_NOR);
         this.addView(view);
+        this.setPadding(8,8,8,8);
         view.setTag(R.id.item_holder,treeViewHolder);
         if(nodeViewMap !=null ){
             nodeViewMap.put(node,treeViewHolder);
@@ -406,7 +410,7 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
                 if(releasedChildHolderNode.getParentNode()!=null){
                     mTreeModel.removeNode(releasedChildHolderNode.getParentNode(),releasedChildHolderNode);
                 }
-                mTreeModel.addNode(targetHolderNode,releasedChildHolderNode);
+                mTreeModel.addNode(targetHolderNode, releasedChildHolderNode);
                 mTreeLayoutManager.calculateByLayoutAlgorithm(mTreeModel);
                 if(isAnimateMove()){
                     recordAnchorLocationOnViewPort(false,false,targetHolderNode);
@@ -502,9 +506,19 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
 
             mPaint.reset();
             mPaint.setColor(Color.parseColor("#4FF1286C"));
-            mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(14);
             PointF centerPoint = getCenterPoint(view);
-            drawInfo.getCanvas().drawCircle(centerPoint.x,centerPoint.y,(float)fR,mPaint);
+            Log.d("FR Val", String.valueOf(fR));
+           // drawInfo.getCanvas().drawCircle(centerPoint.x,centerPoint.y,(float)fR,mPaint);
+            float left = view.getLeft() - 100;
+            float top =  view.getTop() - 100;
+            float right =  view.getRight() + 100;
+            float bottom =  view.getBottom() + 100;
+            float rx = 30;
+            float ry = 30;
+
+            drawInfo.getCanvas().drawRoundRect(left, top, right, bottom, rx, ry, mPaint);
             PointPool.free(centerPoint);
         }
     }

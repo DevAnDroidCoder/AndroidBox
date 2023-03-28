@@ -70,7 +70,7 @@ public class GysoTreeView extends FrameLayout {
         treeViewContainer.setAnimateRemove(true);
         treeViewContainer.setAnimateMove(true);
         //paint.setColor(Color.RED);
-        //paint.setStyle(Paint.Style.FILL);        ;
+        //paint.setStyle(Paint.Style.FILL);
         //setLayerType(LAYER_TYPE_HARDWARE,paint);
     }
 

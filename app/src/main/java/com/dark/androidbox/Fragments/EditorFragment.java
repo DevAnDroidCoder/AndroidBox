@@ -1,10 +1,7 @@
 package com.dark.androidbox.Fragments;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,39 +10,39 @@ import androidx.fragment.app.Fragment;
 
 import com.dark.androidbox.Adpaters.CodeAdapter;
 import com.dark.androidbox.Adpaters.Codes;
+import com.dark.androidbox.Managers.CodeManager.ObjManager;
+import com.dark.androidbox.Managers.CodeManager.Types;
 import com.dark.androidbox.R;
 import com.dark.androidbox.System.NodeEvents;
 import com.dark.androidbox.builder.LogicBuilder;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.gyso.treeview.GysoTreeView;
 import com.gyso.treeview.TreeViewEditor;
-import com.gyso.treeview.layout.BoxDownTreeLayoutManager;
-import com.gyso.treeview.layout.BoxRightTreeLayoutManager;
-import com.gyso.treeview.layout.CompactRightTreeLayoutManager;
 import com.gyso.treeview.layout.TableRightTreeLayoutManager;
 import com.gyso.treeview.layout.TreeLayoutManager;
-import com.gyso.treeview.line.AngledLine;
 import com.gyso.treeview.line.BaseLine;
 import com.gyso.treeview.line.SmoothLine;
 import com.gyso.treeview.model.NodeModel;
 import com.gyso.treeview.model.TreeModel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class EditorFragment extends Fragment implements NodeEvents {
 
+    public static String DynamicCode = "";
     public GysoTreeView treeView;
     public TreeViewEditor editor;
-
     public MaterialButton code, node;
+    public MaterialSwitch dragLock;
     public LogicBuilder builder = new LogicBuilder(sampleCode());
     CodeAdapter adapter;
     TreeLayoutManager treeLayoutManager;
+    TreeModel<Codes> treeModel;
+    NodeModel<Codes> classSample;
     private NodeModel<Codes> parentToRemoveChildren = null;
     private NodeModel<Codes> targetNode;
 
-    public EditorFragment() {}
+    public EditorFragment() {
+    }
 
     //For Testing Purposes Only
     public static String sampleCode() {
@@ -53,7 +50,7 @@ public class EditorFragment extends Fragment implements NodeEvents {
                 "import java.util.regex.Matcher;\n" +
                 "import java.util.regex.Pattern;\n" +
                 "\n" +
-                "public class JavaCodeParser extends Fragment implements NodeEvents, Siddhi, Data, Events {\n" +
+                "public class JavaCodeParser extends Fragment implements NodeEvents, Data, Events {\n" +
                 "    private String codeString;\n" +
                 "    private ArrayList<String> classes;\n" +
                 "    private ArrayList<String> functions;\n" +
@@ -143,6 +140,14 @@ public class EditorFragment extends Fragment implements NodeEvents {
                 "   \n";
     }
 
+    public static String GenVar(StringBuilder varName) {
+        return "public static String " + varName + " = \"\";";
+    }
+
+    public static String GenMethod(StringBuilder methodName) {
+        return "public static String" + methodName + " () { \n\n }";
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,6 +161,8 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
         code = root.findViewById(R.id.code);
         node = root.findViewById(R.id.node);
+
+        dragLock = root.findViewById(R.id.drag);
 
         initNODE();
         Logic();
@@ -176,7 +183,7 @@ public class EditorFragment extends Fragment implements NodeEvents {
     }
 
     public void initNODE() {
-        adapter = new CodeAdapter(requireActivity().getSupportFragmentManager(), getActivity(), this);
+        adapter = new CodeAdapter(requireActivity().getSupportFragmentManager(), getActivity(), this, treeView.getEditor());
 
         treeLayoutManager = getTreeLayoutManager();
 
@@ -187,12 +194,12 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
         editor = treeView.getEditor();
 
-        editor.requestMoveNodeByDragging(true);
+        dragLock.setOnCheckedChangeListener((compoundButton, b) -> editor.requestMoveNodeByDragging(b));
     }
 
     private TreeLayoutManager getTreeLayoutManager() {
-        int space_50dp = 30;
-        int space_20dp = 20;
+        int space_50dp = 75;
+        int space_20dp = 75;
         BaseLine line = getLine();
         //return new BoxRightTreeLayoutManager(getContext(),space_50dp,space_20dp,line);
         //return new BoxDownTreeLayoutManager(getContext(),space_50dp,space_20dp,line);
@@ -203,7 +210,7 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
 
         //TODO !!!!! the layoutManagers below are just for test don't use in your projects. Just for test now
-        return new TableRightTreeLayoutManager(getContext(),space_50dp,space_20dp,line);
+        return new TableRightTreeLayoutManager(getContext(), space_50dp, space_20dp, line);
         //return new TableLeftTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new TableDownTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new TableUpTreeLayoutManager(this,space_50dp,space_20dp,line);
@@ -222,40 +229,24 @@ public class EditorFragment extends Fragment implements NodeEvents {
     }
 
     private BaseLine getLine() {
-        //return new SmoothLine(Color.parseColor("#8EBBFF"), 2);
+        return new SmoothLine(Color.parseColor("#8EBBFF"), 2);
         //return new StraightLine(Color.parseColor("#055287"),2);
         //return new DashLine(Color.parseColor("#F1286C"),3);
-        return new AngledLine();
+        //return new AngledLine();
     }
 
     private void setData(CodeAdapter adapter) {
-
-        NodeModel<Codes> functionSample = null;
-        NodeModel<Codes> rootVariables;
         //root
+        classSample = new NodeModel<>(new Codes(0, "Main Class"));
 
-
-
-        for (int i = 0; i < builder.getVariables().size(); i++) {
-
-        }
-
-        NodeModel<Codes> classSample = new NodeModel<>(new Codes(0, builder.getClasses().get(0)));
-
-        TreeModel<Codes> treeModel = new TreeModel<>(classSample);
+        treeModel = new TreeModel<>(classSample);
 
         //child nodes
-        NodeModel<Codes> varSample = new NodeModel<>(new Codes(2, builder.getVariables().get(0)));
+        NodeModel<Codes> varSample = new NodeModel<>(new Codes(1, "Add Variables"));
 
-        int cac = 0;
+        NodeModel<Codes> functionSample = new NodeModel<>(new Codes(2, "Add Methods"));
+        treeModel.addNode(classSample, functionSample, varSample);
 
-        for (int i = 0; i < builder.getFunctions().size(); i++) {
-            if (i == 5){
-                break;
-            }
-            functionSample = new NodeModel<>(new Codes(i, builder.getFunctions().get(i)));
-            treeModel.addNode(classSample, functionSample, varSample);
-        }
         //build relationship
         //treeModel.addNode(classSample, varSample);
 
@@ -268,7 +259,23 @@ public class EditorFragment extends Fragment implements NodeEvents {
     }
 
     @Override
-    public void NodeOnLongClick() {
+    public void NodeOnClick(int id) {
+        if (id == 0) {
+            StringBuilder data = builder.ObjectGenerator(new ObjManager(new StringBuilder("MyClass"), Types.ObjTypes.Class));
+            NodeModel<Codes> classSample2 =
+                    new NodeModel<>(
+                            new Codes(
+                                    1,
+                                    new LogicBuilder(data.toString())
+                                            .getClasses()
+                                            .get(0)));
+            treeModel.addNode(classSample, classSample2);
+            adapter.setTreeModel(treeModel);
 
+        } else {
+            if (id == 1) {
+                DynamicCode = GenVar(new StringBuilder("Data"));
+            }
+        }
     }
 }

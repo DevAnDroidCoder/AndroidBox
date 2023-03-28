@@ -12,6 +12,15 @@
         android:layout_height="match_parent"
         android:background="#1E1E1E" />
 
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/drag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp" />
+
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/quick_tabs"
         android:layout_width="wrap_content"
@@ -46,4 +55,5 @@
             android:text="Preview" />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
+
 </RelativeLayout>

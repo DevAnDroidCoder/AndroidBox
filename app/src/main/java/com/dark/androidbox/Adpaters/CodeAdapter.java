@@ -22,14 +22,14 @@ import com.dark.androidbox.R;
 import com.dark.androidbox.System.NodeEvents;
 import com.dark.androidbox.builder.LogicBuilder;
 import com.dark.androidbox.databinding.CodeNodesBinding;
+import com.google.android.material.button.MaterialButton;
+import com.gyso.treeview.TreeViewEditor;
 import com.gyso.treeview.adapter.DrawInfo;
 import com.gyso.treeview.adapter.TreeViewAdapter;
 import com.gyso.treeview.adapter.TreeViewHolder;
 import com.gyso.treeview.line.BaseLine;
 import com.gyso.treeview.model.NodeModel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class CodeAdapter extends TreeViewAdapter<Codes> {
@@ -40,10 +40,13 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
 
     FragmentManager manager;
 
-    public CodeAdapter(FragmentManager manager, Activity activity, NodeEvents events) {
+    TreeViewEditor editor;
+
+    public CodeAdapter(FragmentManager manager, Activity activity, NodeEvents events, TreeViewEditor editor) {
         this.ctx = activity;
         this.events = events;
         this.manager = manager;
+        this.editor = editor;
     }
 
     @Override
@@ -67,11 +70,20 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
 
         TextView node_id = items.findViewById(R.id.node_id);
 
+        MaterialButton delNode = items.findViewById(R.id.delNode);
+
         NodeModel<Codes> nodeObj = holder.getNode();
 
         final Codes blockData = nodeObj.value;
 
         cardInfo.setVisibility(View.GONE);
+
+        items.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                events.NodeOnClick(blockData.itemId);
+            }
+        });
 
         head_node.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -81,10 +93,16 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
             }
         });
 
+        delNode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editor.removeNode(holder.getNode());
+            }
+        });
+
 
         label.setText(blockData.label);
         if (blockData.itemId == 0) {
-
             String data = setUpClassInfo(new LogicBuilder(EditorFragment.sampleCode()));
 
             SpannableStringBuilder colorant = new SpannableStringBuilder(data);
@@ -98,7 +116,15 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
             txt_info.setText(colorant);
 
         } else {
-            txt_info.setText("None !");
+            if (blockData.itemId == 1) {
+                txt_info.setText("Click Here To Add Var");
+                txt_info.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            } else {
+                if (blockData.itemId == 2) {
+                    txt_info.setText("Click Here To Add Methods");
+                    txt_info.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                }
+            }
         }
         node_id.setText("Node -> ".concat(String.valueOf(blockData.getItemId())));
 
