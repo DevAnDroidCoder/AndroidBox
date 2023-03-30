@@ -8,7 +8,7 @@ public class Types {
 
         Public(new StringBuilder("public"), 0),
         Private(new StringBuilder("private"), 1),
-        Static(new StringBuilder("static"), 2);
+        Static(new StringBuilder("public static"), 2);
 
         private final StringBuilder Types_label;
         private final int Types_position;

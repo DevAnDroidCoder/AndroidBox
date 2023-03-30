@@ -75,6 +75,8 @@ public abstract class TreeViewAdapter<T> {
         }
     }
 
+
+
     public void notifyItemViewChange(NodeModel<T> node){
         if(notifier!=null){
             notifier.onItemViewChange(node);

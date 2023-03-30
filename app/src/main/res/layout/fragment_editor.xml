@@ -12,6 +12,17 @@
         android:layout_height="match_parent"
         android:background="#1E1E1E" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/focusMid"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="90dp"
+        android:text="Focus Mid" />
+
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/drag"
         android:layout_width="wrap_content"

@@ -35,6 +35,7 @@ public class TreeModel<T> implements Serializable {
      */
     @SafeVarargs
     public final void addNode(NodeModel<?> parent, NodeModel<?>... childNodes) {
+
         if(parent!=null&&childNodes!=null && childNodes.length>0){
             parent.treeModel = this;
             List<NodeModel<T>> nodeModels = new LinkedList<>();

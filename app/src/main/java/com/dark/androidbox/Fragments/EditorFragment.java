@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import com.dark.androidbox.Adpaters.CodeAdapter;
 import com.dark.androidbox.Adpaters.Codes;
+import com.dark.androidbox.Managers.CodeManager.DataTypesManager;
 import com.dark.androidbox.Managers.CodeManager.ObjManager;
 import com.dark.androidbox.Managers.CodeManager.Types;
 import com.dark.androidbox.R;
@@ -23,6 +24,7 @@ import com.gyso.treeview.layout.TableRightTreeLayoutManager;
 import com.gyso.treeview.layout.TreeLayoutManager;
 import com.gyso.treeview.line.BaseLine;
 import com.gyso.treeview.line.SmoothLine;
+import com.gyso.treeview.listener.TreeViewNotifier;
 import com.gyso.treeview.model.NodeModel;
 import com.gyso.treeview.model.TreeModel;
 
@@ -31,7 +33,7 @@ public class EditorFragment extends Fragment implements NodeEvents {
     public static String DynamicCode = "";
     public GysoTreeView treeView;
     public TreeViewEditor editor;
-    public MaterialButton code, node;
+    public MaterialButton code, node, focusMid;
     public MaterialSwitch dragLock;
     public LogicBuilder builder = new LogicBuilder(sampleCode());
     CodeAdapter adapter;
@@ -40,6 +42,8 @@ public class EditorFragment extends Fragment implements NodeEvents {
     NodeModel<Codes> classSample;
     private NodeModel<Codes> parentToRemoveChildren = null;
     private NodeModel<Codes> targetNode;
+
+    TreeViewNotifier notifier;
 
     public EditorFragment() {
     }
@@ -162,6 +166,8 @@ public class EditorFragment extends Fragment implements NodeEvents {
         code = root.findViewById(R.id.code);
         node = root.findViewById(R.id.node);
 
+        focusMid = root.findViewById(R.id.focusMid);
+
         dragLock = root.findViewById(R.id.drag);
 
         initNODE();
@@ -179,6 +185,11 @@ public class EditorFragment extends Fragment implements NodeEvents {
         node.setOnClickListener(view -> {
 
         });
+
+        focusMid.setOnClickListener(view -> {
+            editor.focusMidLocation();
+        });
+
 
     }
 
@@ -247,9 +258,6 @@ public class EditorFragment extends Fragment implements NodeEvents {
         NodeModel<Codes> functionSample = new NodeModel<>(new Codes(2, "Add Methods"));
         treeModel.addNode(classSample, functionSample, varSample);
 
-        //build relationship
-        //treeModel.addNode(classSample, varSample);
-
         //mark
         parentToRemoveChildren = classSample;
         targetNode = functionSample;
@@ -261,20 +269,38 @@ public class EditorFragment extends Fragment implements NodeEvents {
     @Override
     public void NodeOnClick(int id) {
         if (id == 0) {
-            StringBuilder data = builder.ObjectGenerator(new ObjManager(new StringBuilder("MyClass"), Types.ObjTypes.Class));
+            StringBuilder data =
+                    builder.
+                            ObjectGenerator(
+                                    new ObjManager(
+                                            new StringBuilder("MyClass"),
+                                            Types.ObjTypes.Class));
+
             NodeModel<Codes> classSample2 =
                     new NodeModel<>(
                             new Codes(
                                     1,
-                                    new LogicBuilder(data.toString())
-                                            .getClasses()
-                                            .get(0)));
+                                    new LogicBuilder(data.toString()).getClasses().get(0)));
+
             treeModel.addNode(classSample, classSample2);
             adapter.setTreeModel(treeModel);
 
         } else {
             if (id == 1) {
-                DynamicCode = GenVar(new StringBuilder("Data"));
+                StringBuilder data =
+                        builder.
+                                ObjectGenerator(
+                                        new DataTypesManager(
+                                                new StringBuilder("newString"),
+                                                Types.VisibilityTypes.Public,
+                                                Types.DataTypes.String));
+
+                NodeModel<Codes> classSample2 =
+                        new NodeModel<>(
+                                new Codes(
+                                        1, ""));
+
+                treeModel.addNode(classSample, classSample2);
             }
         }
     }
