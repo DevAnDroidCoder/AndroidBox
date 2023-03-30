@@ -10,3 +10,7 @@ it is like **Sketchware** But **Sketchware/Sketchware pro** misses some Features
 
 So I am Aiming To Add Those Featues To a single APP
 An if I can then i will add a plugins sections were you can download The Compiler, Themes, icons, Syntex Hilighter Like VS CODE
+
+** HERE IS THE DESIGN **
+
+![Frame 48](https://user-images.githubusercontent.com/67579112/228865415-c6c67ebc-e862-4c76-9454-ffa3f5f23c05.svg)
