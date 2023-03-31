@@ -9,8 +9,18 @@
     <com.gyso.treeview.GysoTreeView
         android:id="@+id/base_tree_view"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <com.amrdeveloper.codeview.CodeView
+        android:id="@+id/codeTxt"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#1E1E1E" />
+        android:dropDownWidth="200dp"
+        android:dropDownHorizontalOffset="5dp"
+        android:dropDownSelector="#1E1E1E"
+        android:paddingTop="100dp"
+        android:paddingStart="25dp"
+        android:gravity="top|start" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/focusMid"

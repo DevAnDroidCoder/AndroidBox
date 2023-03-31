@@ -1,14 +1,23 @@
 package com.dark.androidbox.Fragments;
 
+import static com.dark.androidbox.Utilities.DarkUtilities.ShowMessage;
+
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
 import androidx.fragment.app.Fragment;
 
+import com.amrdeveloper.codeview.Code;
+import com.amrdeveloper.codeview.CodeView;
+import com.amrdeveloper.codeview.CodeViewAdapter;
+import com.amrdeveloper.codeview.Keyword;
 import com.dark.androidbox.Adpaters.CodeAdapter;
+import com.dark.androidbox.Adpaters.CodeItemsAdapter;
 import com.dark.androidbox.Adpaters.Codes;
 import com.dark.androidbox.Managers.CodeManager.DataTypesManager;
 import com.dark.androidbox.Managers.CodeManager.ObjManager;
@@ -28,18 +37,28 @@ import com.gyso.treeview.listener.TreeViewNotifier;
 import com.gyso.treeview.model.NodeModel;
 import com.gyso.treeview.model.TreeModel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 public class EditorFragment extends Fragment implements NodeEvents {
 
     public static String DynamicCode = "";
     public GysoTreeView treeView;
     public TreeViewEditor editor;
     public MaterialButton code, node, focusMid;
+
+    public CodeView txtCode;
     public MaterialSwitch dragLock;
     public LogicBuilder builder = new LogicBuilder(sampleCode());
+
     CodeAdapter adapter;
     TreeLayoutManager treeLayoutManager;
     TreeModel<Codes> treeModel;
-    NodeModel<Codes> classSample;
+    NodeModel<Codes> rootClass;
     private NodeModel<Codes> parentToRemoveChildren = null;
     private NodeModel<Codes> targetNode;
 
@@ -165,6 +184,7 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
         code = root.findViewById(R.id.code);
         node = root.findViewById(R.id.node);
+        txtCode = root.findViewById(R.id.codeTxt);
 
         focusMid = root.findViewById(R.id.focusMid);
 
@@ -178,8 +198,97 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
     public void Logic() {
 
-        code.setOnClickListener(v -> {
+        txtCode.setVisibility(View.GONE);
+        treeView.setVisibility(View.VISIBLE);
 
+        code.setOnClickListener(v -> {
+            DynamicCode = "";
+
+            //setUp cac var that will take the code/data of Root Class
+            StringBuilder cac = new StringBuilder(rootClass.getValue().data);
+
+            //Divide an rule on the class Data
+            String[] lines = cac.toString().split("\\n");
+            ArrayList<String> classData = new ArrayList<>(Arrays.asList(lines));
+
+            //get All the child data that is present in the root class
+            ArrayList<NodeModel<Codes>> data = new ArrayList<>(rootClass.getChildNodes());
+
+            StringBuilder CrashData = new StringBuilder();
+
+            for (NodeModel<Codes> data2 : data) {
+                //Get All The Data From Every Node An Convert it into String
+                CrashData.append(data2.getValue().data);
+            }
+
+            //Get All The Methods an Variables From The Code
+            ArrayList<String> varList = new LogicBuilder(CrashData.toString()).getVariables();
+            ArrayList<String> methodList = new ArrayList<>();
+            methodList.add(new LogicBuilder(CrashData.toString()).getFunctionInfo(new LogicBuilder(CrashData.toString()).getFunctions().get(0)));
+
+            //Create new Var For String the Class, Variables an methods
+
+            StringBuilder dataClass = new StringBuilder();
+            StringBuilder dataVar = new StringBuilder();
+            StringBuilder dataMethods = new StringBuilder();
+
+            for (String varData : varList) {
+                dataVar.append(varData).append("\n\n");
+            }
+
+            for (String methodData : methodList) {
+                dataMethods.append(methodData).append("\n\n");
+            }
+
+            for (int i = 0; i < classData.size(); i++) {
+                if (i == classData.size() - 2) break;
+                dataClass.append(classData.get(i));
+            }
+
+            DynamicCode = dataClass + "\n\n" + dataVar + dataMethods + "}";
+
+            txtCode.setVisibility(View.VISIBLE);
+            treeView.setVisibility(View.GONE);
+
+            Pattern classPattern = Pattern.compile("(public|private|protected)?\\s*(class)\\s+(\\w+)");
+            Pattern functionPattern = Pattern.compile("(public|private|protected)?\\s*(static)?\\s*(\\w+)\\s*(\\(.*?\\))");
+            Pattern variablePattern = Pattern.compile("(public|private|protected)?\\s*(static)?\\s*(\\w+)\\s+(\\w+)(\\s*=.*?)?;");
+
+            ArrayList<Code> list_data = new ArrayList<>();
+
+            list_data.add(new Keyword("void"));
+            list_data.add(new Keyword("public"));
+            list_data.add(new Keyword("static"));
+            list_data.add(new Keyword("private"));
+            list_data.add(new Keyword("String"));
+            list_data.add(new Keyword("class"));
+            list_data.add(new Keyword("enum"));
+
+            txtCode.setAdapter(new CodeViewAdapter(getContext(), R.layout.code_items_list, R.id.label_codeBlock, list_data));
+
+            txtCode.enablePairComplete(true);
+
+            Map<Character, Character> pairCompleteMap = new HashMap<>();
+            pairCompleteMap.put('{', '}');
+            pairCompleteMap.put('[', ']');
+            pairCompleteMap.put('(', ')');
+            pairCompleteMap.put('<', '>');
+            pairCompleteMap.put('"', '"');
+
+            txtCode.setPairCompleteMap(pairCompleteMap);
+
+            txtCode.addSyntaxPattern(classPattern, Color.parseColor("#523565"));
+            txtCode.addSyntaxPattern(functionPattern, Color.parseColor("#634736"));
+            txtCode.addSyntaxPattern(variablePattern, Color.parseColor("#634538"));
+
+            txtCode.setEnableLineNumber(true);
+            txtCode.setEnableRelativeLineNumber(true);
+            txtCode.setText(DynamicCode);
+
+
+            Log.d("Code Generator", "Var" + varList.size() + "\nMethod" + methodList.size());
+
+            //  ShowMessage(getContext(), new StringBuilder(" the size is " + ));
         });
 
         node.setOnClickListener(view -> {
@@ -205,7 +314,7 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
         editor = treeView.getEditor();
 
-        dragLock.setOnCheckedChangeListener((compoundButton, b) -> editor.requestMoveNodeByDragging(b));
+        dragLock.setOnCheckedChangeListener((btn, b) -> editor.requestMoveNodeByDragging(b));
     }
 
     private TreeLayoutManager getTreeLayoutManager() {
@@ -247,19 +356,21 @@ public class EditorFragment extends Fragment implements NodeEvents {
     }
 
     private void setData(CodeAdapter adapter) {
-        //root
-        classSample = new NodeModel<>(new Codes(0, "Main Class"));
 
-        treeModel = new TreeModel<>(classSample);
+        StringBuilder data = builder.ObjectGenerator(new ObjManager(new StringBuilder("MainClass"), Types.ObjTypes.Class));
+        //root
+        rootClass = new NodeModel<>(new Codes(0, new LogicBuilder(data.toString()).getClasses().get(0), data));
+
+        treeModel = new TreeModel<>(rootClass);
 
         //child nodes
-        NodeModel<Codes> varSample = new NodeModel<>(new Codes(1, "Add Variables"));
+        NodeModel<Codes> varSample = new NodeModel<>(new Codes(1, "Add Variables", new StringBuilder("public String data; ")));
 
-        NodeModel<Codes> functionSample = new NodeModel<>(new Codes(2, "Add Methods"));
-        treeModel.addNode(classSample, functionSample, varSample);
+        NodeModel<Codes> functionSample = new NodeModel<>(new Codes(2, "Add Methods", new StringBuilder("public void Run() { \n }")));
+        treeModel.addNode(rootClass, functionSample, varSample);
 
         //mark
-        parentToRemoveChildren = classSample;
+        parentToRemoveChildren = rootClass;
         targetNode = functionSample;
 
         //set data
@@ -269,38 +380,26 @@ public class EditorFragment extends Fragment implements NodeEvents {
     @Override
     public void NodeOnClick(int id) {
         if (id == 0) {
-            StringBuilder data =
-                    builder.
-                            ObjectGenerator(
-                                    new ObjManager(
-                                            new StringBuilder("MyClass"),
-                                            Types.ObjTypes.Class));
+            StringBuilder data = builder.ObjectGenerator(new ObjManager(new StringBuilder("MyClass"), Types.ObjTypes.Class));
 
-            NodeModel<Codes> classSample2 =
-                    new NodeModel<>(
-                            new Codes(
-                                    1,
-                                    new LogicBuilder(data.toString()).getClasses().get(0)));
+            NodeModel<Codes> classSample2 = new NodeModel<>(new Codes(1, new LogicBuilder(data.toString()).getClasses().get(0), data));
 
-            treeModel.addNode(classSample, classSample2);
+            treeModel.addNode(rootClass, classSample2);
             adapter.setTreeModel(treeModel);
 
         } else {
             if (id == 1) {
-                StringBuilder data =
-                        builder.
-                                ObjectGenerator(
-                                        new DataTypesManager(
-                                                new StringBuilder("newString"),
-                                                Types.VisibilityTypes.Public,
-                                                Types.DataTypes.String));
+                StringBuilder data = builder.ObjectGenerator(new DataTypesManager(
+                        new StringBuilder("newString"),
+                        Types.VisibilityTypes.Public,
+                        Types.DataTypes.String));
 
-                NodeModel<Codes> classSample2 =
-                        new NodeModel<>(
-                                new Codes(
-                                        1, ""));
+                ShowMessage(getContext(), data);
 
-                treeModel.addNode(classSample, classSample2);
+                NodeModel<Codes> classSample2 = new NodeModel<>(new Codes(1, new LogicBuilder(data.toString()).getVariables().get(0), data));
+
+                treeModel.addNode(rootClass, classSample2);
+                adapter.setTreeModel(treeModel);
             }
         }
     }

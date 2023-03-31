@@ -25,6 +25,6 @@ public class ObjManager implements CodeManager {
         code.append("public ")
                 .append(types.getTypes_label())
                 .append(" ").append(ObjName.toString())
-                .append("{ \n\n }");
+                .append(" {\n\n}");
     }
 }

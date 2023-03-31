@@ -25,8 +25,9 @@ public class DataTypesManager implements CodeManager {
 
     public void DataTypeBuilder(StringBuilder ObjName, Types.VisibilityTypes visibilityTypes, Types.DataTypes types) {
         code.append(visibilityTypes.getTypes_label())
+                .append(" ")
                 .append(types.getTypes_label())
                 .append(" ").append(ObjName.toString())
-                .append("{ \n\n }");
+                .append(";");
     }
 }

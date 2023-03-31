@@ -56,7 +56,7 @@ public class LogicBuilder {
         Pattern variablePattern = Pattern.compile("(public|private|protected)?\\s*(static)?\\s*(\\w+)\\s+(\\w+)(\\s*=.*?)?;");
         Matcher matcher = variablePattern.matcher(codeString);
         while (matcher.find()) {
-            variables.add(matcher.group(4));
+            variables.add(matcher.group());
             objType = 2;
         }
     }

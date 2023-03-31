@@ -37,8 +37,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
     implementation project(path: ':nodes')
+    implementation project(path: ':codeview')
+
     implementation 'com.google.android.material:material:1.8.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.github.javaparser:javaparser-core:3.25.1'
 
     testImplementation 'junit:junit:4.13.2'

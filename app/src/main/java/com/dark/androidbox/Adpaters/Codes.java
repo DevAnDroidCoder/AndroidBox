@@ -6,9 +6,10 @@ public class Codes {
 
     public StringBuilder data;
 
-    public Codes(int itemId, String label) {
+    public Codes(int itemId, String label, StringBuilder data) {
         this.itemId = itemId;
         this.label = label;
+        this.data = data;
     }
 
     @Override

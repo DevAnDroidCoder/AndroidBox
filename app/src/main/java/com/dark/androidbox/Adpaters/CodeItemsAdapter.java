@@ -23,12 +23,9 @@ public class CodeItemsAdapter extends RecyclerView.Adapter<CodeItemsAdapter.View
     ArrayList<HashMap<String, Object>> list_data;
     Activity ctx;
 
-    NodeEvents events;
-
-    public CodeItemsAdapter(Activity ctx, ArrayList<HashMap<String, Object>> list_data, NodeEvents events) {
+    public CodeItemsAdapter(Activity ctx, ArrayList<HashMap<String, Object>> list_data) {
         this.list_data = list_data;
         this.ctx = ctx;
-        this.events = events;
     }
 
     public static int dpToPx(float dp, Context context) {
