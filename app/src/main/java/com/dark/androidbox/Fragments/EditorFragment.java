@@ -8,16 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import androidx.fragment.app.Fragment;
 
-import com.amrdeveloper.codeview.Code;
 import com.amrdeveloper.codeview.CodeView;
-import com.amrdeveloper.codeview.CodeViewAdapter;
-import com.amrdeveloper.codeview.Keyword;
 import com.dark.androidbox.Adpaters.CodeAdapter;
-import com.dark.androidbox.Adpaters.CodeItemsAdapter;
 import com.dark.androidbox.Adpaters.Codes;
 import com.dark.androidbox.Managers.CodeManager.DataTypesManager;
 import com.dark.androidbox.Managers.CodeManager.ObjManager;
@@ -39,10 +34,6 @@ import com.gyso.treeview.model.TreeModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 public class EditorFragment extends Fragment implements NodeEvents {
 
@@ -250,39 +241,6 @@ public class EditorFragment extends Fragment implements NodeEvents {
             txtCode.setVisibility(View.VISIBLE);
             treeView.setVisibility(View.GONE);
 
-            Pattern classPattern = Pattern.compile("(public|private|protected)?\\s*(class)\\s+(\\w+)");
-            Pattern functionPattern = Pattern.compile("(public|private|protected)?\\s*(static)?\\s*(\\w+)\\s*(\\(.*?\\))");
-            Pattern variablePattern = Pattern.compile("(public|private|protected)?\\s*(static)?\\s*(\\w+)\\s+(\\w+)(\\s*=.*?)?;");
-
-            ArrayList<Code> list_data = new ArrayList<>();
-
-            list_data.add(new Keyword("void"));
-            list_data.add(new Keyword("public"));
-            list_data.add(new Keyword("static"));
-            list_data.add(new Keyword("private"));
-            list_data.add(new Keyword("String"));
-            list_data.add(new Keyword("class"));
-            list_data.add(new Keyword("enum"));
-
-            txtCode.setAdapter(new CodeViewAdapter(getContext(), R.layout.code_items_list, R.id.label_codeBlock, list_data));
-
-            txtCode.enablePairComplete(true);
-
-            Map<Character, Character> pairCompleteMap = new HashMap<>();
-            pairCompleteMap.put('{', '}');
-            pairCompleteMap.put('[', ']');
-            pairCompleteMap.put('(', ')');
-            pairCompleteMap.put('<', '>');
-            pairCompleteMap.put('"', '"');
-
-            txtCode.setPairCompleteMap(pairCompleteMap);
-
-            txtCode.addSyntaxPattern(classPattern, Color.parseColor("#523565"));
-            txtCode.addSyntaxPattern(functionPattern, Color.parseColor("#634736"));
-            txtCode.addSyntaxPattern(variablePattern, Color.parseColor("#634538"));
-
-            txtCode.setEnableLineNumber(true);
-            txtCode.setEnableRelativeLineNumber(true);
             txtCode.setText(DynamicCode);
 
 
