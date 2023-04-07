@@ -4,7 +4,6 @@ import static com.dark.androidbox.Utilities.DarkUtilities.ShowMessage;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import com.dark.androidbox.Managers.CodeManager.DataTypesManager;
 import com.dark.androidbox.Managers.CodeManager.ObjManager;
 import com.dark.androidbox.Managers.CodeManager.Types;
 import com.dark.androidbox.R;
+import com.dark.androidbox.Services.codeEditor.Editor;
 import com.dark.androidbox.System.NodeEvents;
 import com.dark.androidbox.builder.LogicBuilder;
 import com.google.android.material.button.MaterialButton;
@@ -28,12 +28,10 @@ import com.gyso.treeview.layout.TableRightTreeLayoutManager;
 import com.gyso.treeview.layout.TreeLayoutManager;
 import com.gyso.treeview.line.BaseLine;
 import com.gyso.treeview.line.SmoothLine;
-import com.gyso.treeview.listener.TreeViewNotifier;
 import com.gyso.treeview.model.NodeModel;
 import com.gyso.treeview.model.TreeModel;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedList;
 
 public class EditorFragment extends Fragment implements NodeEvents {
 
@@ -53,7 +51,7 @@ public class EditorFragment extends Fragment implements NodeEvents {
     private NodeModel<Codes> parentToRemoveChildren = null;
     private NodeModel<Codes> targetNode;
 
-    TreeViewNotifier notifier;
+    public Editor codeEditor;
 
     public EditorFragment() {
     }
@@ -80,75 +78,6 @@ public class EditorFragment extends Fragment implements NodeEvents {
                 "        extractFunctions();\n" +
                 "        extractVariables();\n" +
                 "    }\n" +
-                "    \n" +
-                "    private void extractClasses() {\n" +
-                "        Pattern classPattern = Pattern.compile(\"(public|private|protected)?\\\\s*(class)\\\\s+(\\\\w+)\");\n" +
-                "        Matcher matcher = classPattern.matcher(codeString);\n" +
-                "        while (matcher.find()) {\n" +
-                "            classes.add(matcher.group(3));\n" +
-                "        }\n" +
-                "    }\n" +
-                "    \n" +
-                "    private void extractFunctions() {\n" +
-                "        Pattern functionPattern = Pattern.compile(\"(public|private|protected)?\\\\s*(static)?\\\\s*(\\\\w+)\\\\s*(\\\\(.*?\\\\))\");\n" +
-                "        Matcher matcher = functionPattern.matcher(codeString);\n" +
-                "        while (matcher.find()) {\n" +
-                "            functions.add(matcher.group(3));\n" +
-                "        }\n" +
-                "    }\n" +
-                "    \n" +
-                "    private void extractVariables() {\n" +
-                "        Pattern variablePattern = Pattern.compile(\"(public|private|protected)?\\\\s*(static)?\\\\s*(\\\\w+)\\\\s+(\\\\w+)(\\\\s*=.*?)?;\");\n" +
-                "        Matcher matcher = variablePattern.matcher(codeString);\n" +
-                "        while (matcher.find()) {\n" +
-                "            variables.add(matcher.group(4));\n" +
-                "        }\n" +
-                "    }\n" +
-                "    \n" +
-                "    public String getCodeClass(String className) {\n" +
-                "        String patternString = \"(public|private|protected)?\\\\s*(class)\\\\s+\" + className + \"\\\\s*(\\\\{.*?\\\\})\";\n" +
-                "        Pattern pattern = Pattern.compile(patternString, Pattern.DOTALL);\n" +
-                "        Matcher matcher = pattern.matcher(codeString);\n" +
-                "        if (matcher.find()) {\n" +
-                "            return matcher.group(3);\n" +
-                "        }\n" +
-                "        return \"\";\n" +
-                "    }\n" +
-                "    \n" +
-                "    public String getFunctionInfo(String functionName) {\n" +
-                "        String patternString = \"(public|private|protected)?\\\\s*(static)?\\\\s*(\\\\w+)\\\\s+\" + functionName + \"\\\\s*(\\\\(.*?\\\\))\\\\s*(\\\\{.*?\\\\})\";\n" +
-                "        Pattern pattern = Pattern.compile(patternString, Pattern.DOTALL);\n" +
-                "        Matcher matcher = pattern.matcher(codeString);\n" +
-                "        if (matcher.find()) {\n" +
-                "            return matcher.group(0);\n" +
-                "        }\n" +
-                "        return \"\";\n" +
-                "    }\n" +
-                "    \n" +
-                "    public ArrayList<String> getFunctionInput(String functionName) {\n" +
-                "        ArrayList<String> inputList = new ArrayList<String>();\n" +
-                "        String patternString = \"(public|private|protected)?\\\\s*(static)?\\\\s*(\\\\w+)\\\\s+\" + functionName + \"\\\\s*(\\\\(.*?\\\\))\\\\s*(\\\\{.*?\\\\})\";\n" +
-                "        Pattern pattern = Pattern.compile(patternString, Pattern.DOTALL);\n" +
-                "        Matcher matcher = pattern.matcher(codeString);\n" +
-                "        if (matcher.find()) {\n" +
-                "            String inputString = matcher.group(4);\n" +
-                "            Pattern inputPattern = Pattern.compile(\"(\\\\w+)\\\\s+(\\\\w+)\");\n" +
-                "            Matcher inputMatcher = inputPattern.matcher(inputString);\n" +
-                "            while (inputMatcher.find()) {\n" +
-                "                inputList.add(inputMatcher.group(2));\n" +
-                "            }\n" +
-                "        }\n" +
-                "        return inputList;\n" +
-                "    }\n" +
-                "    \n" +
-                "    public ArrayList<String> getClasses() {\n" +
-                "        return classes;\n" +
-                "    }\n" +
-                "    \n" +
-                "    public ArrayList<String> getFunctions() {\n" +
-                "        return functions;\n" +
-                "    }\n" +
-                "    \n" +
                 "    public ArrayList<String> getVariables() {\n" +
                 "        return variables;\n" +
                 "   \n";
@@ -189,74 +118,30 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
     public void Logic() {
 
+        codeEditor = new Editor(getContext(), txtCode);
+        codeEditor.setUp();
+        codeEditor.setDynamicString(new StringBuilder(rootClass.value.label), "#9e9d4c");
+
         txtCode.setVisibility(View.GONE);
         treeView.setVisibility(View.VISIBLE);
 
         code.setOnClickListener(v -> {
-            DynamicCode = "";
-
-            //setUp cac var that will take the code/data of Root Class
-            StringBuilder cac = new StringBuilder(rootClass.getValue().data);
-
-            //Divide an rule on the class Data
-            String[] lines = cac.toString().split("\\n");
-            ArrayList<String> classData = new ArrayList<>(Arrays.asList(lines));
-
-            //get All the child data that is present in the root class
-            ArrayList<NodeModel<Codes>> data = new ArrayList<>(rootClass.getChildNodes());
-
-            StringBuilder CrashData = new StringBuilder();
-
-            for (NodeModel<Codes> data2 : data) {
-                //Get All The Data From Every Node An Convert it into String
-                CrashData.append(data2.getValue().data);
-            }
-
-            //Get All The Methods an Variables From The Code
-            ArrayList<String> varList = new LogicBuilder(CrashData.toString()).getVariables();
-            ArrayList<String> methodList = new ArrayList<>();
-            methodList.add(new LogicBuilder(CrashData.toString()).getFunctionInfo(new LogicBuilder(CrashData.toString()).getFunctions().get(0)));
-
-            //Create new Var For String the Class, Variables an methods
-
-            StringBuilder dataClass = new StringBuilder();
-            StringBuilder dataVar = new StringBuilder();
-            StringBuilder dataMethods = new StringBuilder();
-
-            for (String varData : varList) {
-                dataVar.append(varData).append("\n\n");
-            }
-
-            for (String methodData : methodList) {
-                dataMethods.append(methodData).append("\n\n");
-            }
-
-            for (int i = 0; i < classData.size(); i++) {
-                if (i == classData.size() - 2) break;
-                dataClass.append(classData.get(i));
-            }
-
-            DynamicCode = dataClass + "\n\n" + dataVar + dataMethods + "}";
-
+            txtCode.setText(NodeToCode());
             txtCode.setVisibility(View.VISIBLE);
             treeView.setVisibility(View.GONE);
-
-            txtCode.setText(DynamicCode);
-
-
-            Log.d("Code Generator", "Var" + varList.size() + "\nMethod" + methodList.size());
-
-            //  ShowMessage(getContext(), new StringBuilder(" the size is " + ));
         });
 
         node.setOnClickListener(view -> {
-
+            if (!DynamicCode.equals("")) {
+                CodeToNode(txtCode.getText().toString());
+            }
+            txtCode.setVisibility(View.GONE);
+            treeView.setVisibility(View.VISIBLE);
         });
 
         focusMid.setOnClickListener(view -> {
             editor.focusMidLocation();
         });
-
 
     }
 
@@ -268,7 +153,7 @@ public class EditorFragment extends Fragment implements NodeEvents {
         treeView.setAdapter(adapter);
         treeView.setTreeLayoutManager(treeLayoutManager);
 
-        setData(adapter);
+        CodeToNode(sampleCode());
 
         editor = treeView.getEditor();
 
@@ -313,28 +198,6 @@ public class EditorFragment extends Fragment implements NodeEvents {
         //return new AngledLine();
     }
 
-    private void setData(CodeAdapter adapter) {
-
-        StringBuilder data = builder.ObjectGenerator(new ObjManager(new StringBuilder("MainClass"), Types.ObjTypes.Class));
-        //root
-        rootClass = new NodeModel<>(new Codes(0, new LogicBuilder(data.toString()).getClasses().get(0), data));
-
-        treeModel = new TreeModel<>(rootClass);
-
-        //child nodes
-        NodeModel<Codes> varSample = new NodeModel<>(new Codes(1, "Add Variables", new StringBuilder("public String data; ")));
-
-        NodeModel<Codes> functionSample = new NodeModel<>(new Codes(2, "Add Methods", new StringBuilder("public void Run() { \n }")));
-        treeModel.addNode(rootClass, functionSample, varSample);
-
-        //mark
-        parentToRemoveChildren = rootClass;
-        targetNode = functionSample;
-
-        //set data
-        adapter.setTreeModel(treeModel);
-    }
-
     @Override
     public void NodeOnClick(int id) {
         if (id == 0) {
@@ -360,5 +223,50 @@ public class EditorFragment extends Fragment implements NodeEvents {
                 adapter.setTreeModel(treeModel);
             }
         }
+    }
+
+    public void CodeToNode(String code) {
+
+        LogicBuilder classBuilder = new LogicBuilder(code);
+
+        if (classBuilder.getClasses().size() != 0) {
+            rootClass = new NodeModel<>(new Codes(0, new LogicBuilder(code).getClasses().get(0), new StringBuilder(code)));
+            treeModel = new TreeModel<>(rootClass);
+        } else {
+            ShowMessage(getContext(), new StringBuilder("No Class Found"));
+        }
+
+        if (classBuilder.getFunctions().size() != 0) {
+
+            for (int i = 0; i < classBuilder.getFunctions().size(); i++) {
+                NodeModel<Codes> funNode =
+                        new NodeModel<>(new Codes(i + 1, classBuilder.getFunctions().get(i), new StringBuilder(classBuilder.getFunctionInfo(classBuilder.getFunctions().get(i)))));
+
+                treeModel.addNode(rootClass, funNode);
+            }
+        } else {
+            ShowMessage(getContext(), new StringBuilder("No Function Found"));
+        }
+
+        if (classBuilder.getVariables().size() != 0) {
+
+            for (int i = 0; i < classBuilder.getVariables().size(); i++) {
+                NodeModel<Codes> funNode =
+                        new NodeModel<>(new Codes(i + 1, builder.getVariables().get(i), new StringBuilder(builder.getVariablesCode().get(i))));
+
+                treeModel.addNode(rootClass, funNode);
+            }
+        } else {
+            ShowMessage(getContext(), new StringBuilder("No Variable Found"));
+        }
+        parentToRemoveChildren = rootClass;
+        targetNode = rootClass.getChildNodes().get(0);
+
+        //set data
+        adapter.setTreeModel(treeModel);
+    }
+
+    public String NodeToCode() {
+        return rootClass.value.data.toString();
     }
 }

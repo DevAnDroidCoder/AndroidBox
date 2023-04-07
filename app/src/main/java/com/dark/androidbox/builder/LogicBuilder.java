@@ -22,16 +22,19 @@ public class LogicBuilder {
 //    1 = Methods
 //    2 = Variables
     private ArrayList<String> variables;
+    private ArrayList<String> variablesCode;
 
     public LogicBuilder(String codeString) {
         this.codeString = codeString;
-        this.classes = new ArrayList<String>();
-        this.functions = new ArrayList<String>();
-        this.variables = new ArrayList<String>();
+        this.classes = new ArrayList<>();
+        this.functions = new ArrayList<>();
+        this.variables = new ArrayList<>();
+        this.variablesCode = new ArrayList<>();
 
         extractClasses();
         extractFunctions();
         extractVariables();
+        extractVariablesCode();
     }
 
     private void extractClasses() {
@@ -56,7 +59,16 @@ public class LogicBuilder {
         Pattern variablePattern = Pattern.compile("(public|private|protected)?\\s*(static)?\\s*(\\w+)\\s+(\\w+)(\\s*=.*?)?;");
         Matcher matcher = variablePattern.matcher(codeString);
         while (matcher.find()) {
-            variables.add(matcher.group());
+            variables.add(matcher.group(4));
+            objType = 2;
+        }
+    }
+
+    private void extractVariablesCode() {
+        Pattern variablePattern = Pattern.compile("(public|private|protected)?\\s*(static)?\\s*(\\w+)\\s+(\\w+)(\\s*=.*?)?;");
+        Matcher matcher = variablePattern.matcher(codeString);
+        while (matcher.find()) {
+            variablesCode.add(matcher.group());
             objType = 2;
         }
     }
@@ -146,6 +158,10 @@ public class LogicBuilder {
 
     public ArrayList<String> getVariables() {
         return variables;
+    }
+
+    public ArrayList<String> getVariablesCode() {
+        return variablesCode;
     }
 
     public StringBuilder ObjectGenerator(CodeManager manager) {
