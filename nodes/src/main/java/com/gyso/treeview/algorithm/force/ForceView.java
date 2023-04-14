@@ -28,21 +28,7 @@ public class ForceView extends View implements ForceListener {
             Color.parseColor("#8bc34a"),
             Color.parseColor("#8d6e63")
     };
-
-    public interface OnNodeClickListener {
-        void onNodeClick(FNode node);
-    }
-
     private OnNodeClickListener onNodeClickListener;
-
-    public OnNodeClickListener getOnNodeClickListener() {
-        return onNodeClickListener;
-    }
-
-    public void setOnNodeClickListener(OnNodeClickListener onNodeClickListener) {
-        this.onNodeClickListener = onNodeClickListener;
-    }
-
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -50,12 +36,10 @@ public class ForceView extends View implements ForceListener {
     private Paint linkTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Path arrowPath = new Path();
     private int strokeColor;
-
     private Force force;
     private float textBaseline;
     private float textHeight;
     private float linkTextBaseline;
-
     private float touchSlop;
     private float downX, downY;
     private float translateX, translateY;
@@ -67,11 +51,10 @@ public class ForceView extends View implements ForceListener {
     private List<FLink> sourceLinks = new ArrayList<>();
     private List<FNode> selectedNodes = new ArrayList<>();
     private ScaleGestureDetector scaleDetector;
-
+    private int activePointerId = -1;
     public ForceView(Context context) {
         this(context, null);
     }
-
     public ForceView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
@@ -79,6 +62,14 @@ public class ForceView extends View implements ForceListener {
     public ForceView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+    }
+
+    public OnNodeClickListener getOnNodeClickListener() {
+        return onNodeClickListener;
+    }
+
+    public void setOnNodeClickListener(OnNodeClickListener onNodeClickListener) {
+        this.onNodeClickListener = onNodeClickListener;
     }
 
     private void init() {
@@ -322,8 +313,6 @@ public class ForceView extends View implements ForceListener {
 
     }
 
-    private int activePointerId = -1;
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         scaleDetector.onTouchEvent(event);
@@ -434,6 +423,10 @@ public class ForceView extends View implements ForceListener {
     private int dp2px(int dp) {
         float scale = getContext().getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
+    }
+
+    public interface OnNodeClickListener {
+        void onNodeClick(FNode node);
     }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {

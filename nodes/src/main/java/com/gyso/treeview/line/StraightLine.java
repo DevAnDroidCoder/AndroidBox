@@ -20,13 +20,13 @@ import com.gyso.treeview.util.DensityUtils;
  * @Time: 2021/5/8  9:40
  * @Email: 674149099@qq.com
  * @WeChat: guaishouN
- * @Describe:
- * Straight Line
+ * @Describe: Straight Line
  */
 public class StraightLine extends BaseLine {
     public static final int DEFAULT_LINE_WIDTH_DP = 3;
     private int lineColor = Color.parseColor("#055287");
     private int lineWidth = DEFAULT_LINE_WIDTH_DP;
+
     public StraightLine() {
         super();
     }
@@ -63,24 +63,24 @@ public class StraightLine extends BaseLine {
         Context context = fromView.getContext();
 
 
-        PointF startPoint,endPoint;
-        if(holderLayoutType == TreeLayoutManager.LAYOUT_TYPE_HORIZON_RIGHT){
-            startPoint =  PointPool.obtain(fromView.getRight(),(fromView.getTop()+fromView.getBottom())/2f);
-            endPoint =  PointPool.obtain(toView.getLeft(),(toView.getTop()+toView.getBottom())/2f);
+        PointF startPoint, endPoint;
+        if (holderLayoutType == TreeLayoutManager.LAYOUT_TYPE_HORIZON_RIGHT) {
+            startPoint = PointPool.obtain(fromView.getRight(), (fromView.getTop() + fromView.getBottom()) / 2f);
+            endPoint = PointPool.obtain(toView.getLeft(), (toView.getTop() + toView.getBottom()) / 2f);
 
-        }else if(holderLayoutType == TreeLayoutManager.LAYOUT_TYPE_HORIZON_LEFT){
-            startPoint =  PointPool.obtain(fromView.getLeft(),(fromView.getTop()+fromView.getBottom())/2f);
-            endPoint =  PointPool.obtain(toView.getRight(),(toView.getTop()+toView.getBottom())/2f);
+        } else if (holderLayoutType == TreeLayoutManager.LAYOUT_TYPE_HORIZON_LEFT) {
+            startPoint = PointPool.obtain(fromView.getLeft(), (fromView.getTop() + fromView.getBottom()) / 2f);
+            endPoint = PointPool.obtain(toView.getRight(), (toView.getTop() + toView.getBottom()) / 2f);
 
-        }else if(holderLayoutType == TreeLayoutManager.LAYOUT_TYPE_VERTICAL_UP){
-            startPoint =  PointPool.obtain((fromView.getLeft()+fromView.getRight())/2f,fromView.getTop());
-            endPoint =  PointPool.obtain((toView.getLeft()+toView.getRight())/2f,toView.getBottom());
+        } else if (holderLayoutType == TreeLayoutManager.LAYOUT_TYPE_VERTICAL_UP) {
+            startPoint = PointPool.obtain((fromView.getLeft() + fromView.getRight()) / 2f, fromView.getTop());
+            endPoint = PointPool.obtain((toView.getLeft() + toView.getRight()) / 2f, toView.getBottom());
 
-        }else if (holderLayoutType == TreeLayoutManager.LAYOUT_TYPE_VERTICAL_DOWN){
-            startPoint =  PointPool.obtain((fromView.getLeft()+fromView.getRight())/2f,fromView.getBottom());
-            endPoint =  PointPool.obtain((toView.getLeft()+toView.getRight())/2f,toView.getTop());
+        } else if (holderLayoutType == TreeLayoutManager.LAYOUT_TYPE_VERTICAL_DOWN) {
+            startPoint = PointPool.obtain((fromView.getLeft() + fromView.getRight()) / 2f, fromView.getBottom());
+            endPoint = PointPool.obtain((toView.getLeft() + toView.getRight()) / 2f, toView.getTop());
 
-        }else{
+        } else {
             super.draw(drawInfo);
             return;
         }
@@ -90,15 +90,15 @@ public class StraightLine extends BaseLine {
         mPath.reset();
         mPaint.setColor(lineColor);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(DensityUtils.dp2px(context,lineWidth));
+        mPaint.setStrokeWidth(DensityUtils.dp2px(context, lineWidth));
         mPaint.setAntiAlias(true);
 
-        mPath.moveTo(startPoint.x,startPoint.y);
-        mPath.lineTo(endPoint.x,endPoint.y);
+        mPath.moveTo(startPoint.x, startPoint.y);
+        mPath.lineTo(endPoint.x, endPoint.y);
         //release
         PointPool.free(startPoint);
         PointPool.free(endPoint);
         //draw
-        canvas.drawPath(mPath,mPaint);
+        canvas.drawPath(mPath, mPaint);
     }
 }

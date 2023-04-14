@@ -12,15 +12,16 @@ import com.gyso.treeview.line.BaseLine;
 import com.gyso.treeview.model.ITraversal;
 import com.gyso.treeview.model.NodeModel;
 import com.gyso.treeview.model.TreeModel;
-import com.gyso.treeview.util.DensityUtils;
 import com.gyso.treeview.util.TreeViewLog;
 import com.gyso.treeview.util.ViewBox;
+
 import java.util.Map;
 
 public class CompactRingTreeLayoutManager extends TreeLayoutManager {
     private static final String TAG = CompactRingTreeLayoutManager.class.getSimpleName();
-    private RingForCompact ring=null;
+    private RingForCompact ring = null;
     private Map<NodeModel<?>, PointF> ringPositions = null;
+
     public CompactRingTreeLayoutManager(Context context, int spaceParentToChild, int spacePeerToPeer, BaseLine baseline) {
         super(context, spaceParentToChild, spacePeerToPeer, baseline);
     }
@@ -32,7 +33,7 @@ public class CompactRingTreeLayoutManager extends TreeLayoutManager {
 
     @Override
     public void calculateByLayoutAlgorithm(TreeModel<?> mTreeModel) {
-        new Table().reconstruction(mTreeModel,Table.COMPACT_TABLE);
+        new Table().reconstruction(mTreeModel, Table.COMPACT_TABLE);
     }
 
     public void performMeasureAndListen(TreeViewContainer treeViewContainer, TreeLayoutManager.MeasureListener measureListener) {
@@ -76,7 +77,7 @@ public class CompactRingTreeLayoutManager extends TreeLayoutManager {
 
                     int rootCenterX = mFixedDx + fixedViewBox.getWidth() / 2;
                     int rootCenterY = mFixedDx + fixedViewBox.getHeight() / 2;
-                    ring = RingForCompact.getInstance(mTreeModel).setCenter(rootCenterX,rootCenterY).setFloorStart(floorStart);
+                    ring = RingForCompact.getInstance(mTreeModel).setCenter(rootCenterX, rootCenterY).setFloorStart(floorStart);
                     ringPositions = ring.genPositions();
                     if (measureListener != null) {
                         measureListener.onMeasureFinished();
@@ -100,7 +101,7 @@ public class CompactRingTreeLayoutManager extends TreeLayoutManager {
         }
         int curH = currentNodeView.getMeasuredHeight();
         int curW = currentNodeView.getMeasuredWidth();
-        int maxR = (int) Math.hypot(curH, curW)+(spacePeerToPeer/2);
+        int maxR = (int) Math.hypot(curH, curW) + (spacePeerToPeer / 2);
         int preMaxR = floorMax.get(node.floor);
         if (preMaxR < maxR) {
             floorMax.put(node.floor, maxR);
@@ -111,16 +112,16 @@ public class CompactRingTreeLayoutManager extends TreeLayoutManager {
         if (parentNode != null) {
             int maxParentFl = floorMax.get(parentNode.floor);
             int parentStart = floorStart.get(parentNode.floor);
-            int start = parentStart+maxParentFl / 2 + spaceParentToChild + maxChildFl / 2;
+            int start = parentStart + maxParentFl / 2 + spaceParentToChild + maxChildFl / 2;
             floorStart.put(node.floor, start);
-            contentMax = start+maxChildFl;
+            contentMax = start + maxChildFl;
         } else {
             //only root will do this
             floorStart.put(node.floor, 0);
         }
-        TreeViewLog.e(TAG,floorStart+"");
-        mContentViewBox.bottom = mContentViewBox.right = Math.max(mContentViewBox.right,2*contentMax);
-        TreeViewLog.e(TAG,"measure--"+mContentViewBox);
+        TreeViewLog.e(TAG, floorStart + "");
+        mContentViewBox.bottom = mContentViewBox.right = Math.max(mContentViewBox.right, 2 * contentMax);
+        TreeViewLog.e(TAG, "measure--" + mContentViewBox);
     }
 
     @Override
@@ -130,7 +131,7 @@ public class CompactRingTreeLayoutManager extends TreeLayoutManager {
             mTreeModel.doTraversalNodes(new ITraversal<NodeModel<?>>() {
                 @Override
                 public void next(NodeModel<?> next) {
-                    TreeViewLog.e(TAG, "performLayout next: "+next);
+                    TreeViewLog.e(TAG, "performLayout next: " + next);
                     layoutNodes(next, treeViewContainer);
                 }
 
@@ -162,21 +163,21 @@ public class CompactRingTreeLayoutManager extends TreeLayoutManager {
 
         int top = floorStart.get(floor);
         int left = deepStart.get(deep);
-        if(ringPositions!=null){
+        if (ringPositions != null) {
             PointF position = ringPositions.get(currentNode);
-            if(position!=null){
-                top = (int)position.x;
-                left =(int)position.y;
-            }else{
-                TreeViewLog.e(TAG,"layout "+currentNode+" error!! Position is null");
+            if (position != null) {
+                top = (int) position.x;
+                left = (int) position.y;
+            } else {
+                TreeViewLog.e(TAG, "layout " + currentNode + " error!! Position is null");
             }
-        }else{
-            TreeViewLog.e(TAG,"layout "+currentNode+" error!! PingPositions is null!!!");
+        } else {
+            TreeViewLog.e(TAG, "layout " + currentNode + " error!! PingPositions is null!!!");
             return;
         }
         int bottom = top + currentHeight;
         int right = left + currentWidth;
-        TreeViewLog.e(TAG,"top["+top+"]left["+left+"]bottom["+bottom+"]right["+right+"]");
+        TreeViewLog.e(TAG, "top[" + top + "]left[" + left + "]bottom[" + bottom + "]right[" + right + "]");
         ViewBox finalLocation = new ViewBox(top, left, bottom, right);
         if (!layoutAnimatePrepare(currentNode, currentNodeView, finalLocation, treeViewContainer)) {
             currentNodeView.layout(left, top, right, bottom);

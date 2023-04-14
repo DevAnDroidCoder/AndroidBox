@@ -54,7 +54,7 @@ public class Editor {
 
     }
 
-    public void setDynamicString(StringBuilder rexTxt, String color){
+    public void setDynamicString(StringBuilder rexTxt, String color) {
         try {
             Pattern pattern = Pattern.compile(String.valueOf(rexTxt));
             txtCode.addSyntaxPattern(pattern, Color.parseColor(color));

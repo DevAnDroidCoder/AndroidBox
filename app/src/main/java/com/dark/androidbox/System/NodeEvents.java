@@ -5,5 +5,5 @@ import java.util.ArrayList;
 public interface NodeEvents {
     void NodeOnClick(int id);
 
-     void AddNode(ArrayList<String> data, int i);
+    void AddNode(ArrayList<String> data, int i);
 }

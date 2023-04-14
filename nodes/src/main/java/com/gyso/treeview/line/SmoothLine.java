@@ -20,13 +20,13 @@ import com.gyso.treeview.util.DensityUtils;
  * @Time: 2021/5/8  9:47
  * @Email: 674149099@qq.com
  * @WeChat: guaishouN
- * @Describe:
- * Simple smooth line
+ * @Describe: Simple smooth line
  */
 public class SmoothLine extends BaseLine {
     public static final int DEFAULT_LINE_WIDTH_DP = 3;
     private int lineColor = Color.parseColor("#055287");
     private int lineWidth = DEFAULT_LINE_WIDTH_DP;
+
     public SmoothLine() {
         super();
     }
@@ -63,32 +63,32 @@ public class SmoothLine extends BaseLine {
         NodeModel<?> toNode = toHolder.getNode();
         Context context = fromView.getContext();
 
-        PointF startPoint,point1,endPoint,point2;
-        if(holderLayoutType== TreeLayoutManager.LAYOUT_TYPE_HORIZON_RIGHT){
-            startPoint = PointPool.obtain(fromView.getRight(),(fromView.getTop()+fromView.getBottom())/2f);
-            point1 = PointPool.obtain(startPoint.x+DensityUtils.dp2px(context,15),startPoint.y);
-            endPoint =  PointPool.obtain(toView.getLeft(),(toView.getTop()+toView.getBottom())/2f);
-            point2 = PointPool.obtain(startPoint.x,endPoint.y);
+        PointF startPoint, point1, endPoint, point2;
+        if (holderLayoutType == TreeLayoutManager.LAYOUT_TYPE_HORIZON_RIGHT) {
+            startPoint = PointPool.obtain(fromView.getRight(), (fromView.getTop() + fromView.getBottom()) / 2f);
+            point1 = PointPool.obtain(startPoint.x + DensityUtils.dp2px(context, 15), startPoint.y);
+            endPoint = PointPool.obtain(toView.getLeft(), (toView.getTop() + toView.getBottom()) / 2f);
+            point2 = PointPool.obtain(startPoint.x, endPoint.y);
 
-        }else if(holderLayoutType== TreeLayoutManager.LAYOUT_TYPE_HORIZON_LEFT){
-            startPoint = PointPool.obtain(fromView.getLeft(),(fromView.getTop()+fromView.getBottom())/2f);
-            point1 = PointPool.obtain(startPoint.x-DensityUtils.dp2px(context,15),startPoint.y);
-            endPoint =  PointPool.obtain(toView.getRight(),(toView.getTop()+toView.getBottom())/2f);
-            point2 = PointPool.obtain(startPoint.x,endPoint.y);
+        } else if (holderLayoutType == TreeLayoutManager.LAYOUT_TYPE_HORIZON_LEFT) {
+            startPoint = PointPool.obtain(fromView.getLeft(), (fromView.getTop() + fromView.getBottom()) / 2f);
+            point1 = PointPool.obtain(startPoint.x - DensityUtils.dp2px(context, 15), startPoint.y);
+            endPoint = PointPool.obtain(toView.getRight(), (toView.getTop() + toView.getBottom()) / 2f);
+            point2 = PointPool.obtain(startPoint.x, endPoint.y);
 
-        }else if(holderLayoutType== TreeLayoutManager.LAYOUT_TYPE_VERTICAL_DOWN){
-            startPoint = PointPool.obtain((fromView.getLeft()+fromView.getRight())/2f,fromView.getBottom());
-            point1 = PointPool.obtain(startPoint.x,startPoint.y+DensityUtils.dp2px(context,15));
-            endPoint =  PointPool.obtain((toView.getLeft()+toView.getRight())/2f,toView.getTop());
-            point2 = PointPool.obtain(endPoint.x,startPoint.y);
+        } else if (holderLayoutType == TreeLayoutManager.LAYOUT_TYPE_VERTICAL_DOWN) {
+            startPoint = PointPool.obtain((fromView.getLeft() + fromView.getRight()) / 2f, fromView.getBottom());
+            point1 = PointPool.obtain(startPoint.x, startPoint.y + DensityUtils.dp2px(context, 15));
+            endPoint = PointPool.obtain((toView.getLeft() + toView.getRight()) / 2f, toView.getTop());
+            point2 = PointPool.obtain(endPoint.x, startPoint.y);
 
-        }else if(holderLayoutType== TreeLayoutManager.LAYOUT_TYPE_VERTICAL_UP){
-            startPoint = PointPool.obtain((fromView.getLeft()+fromView.getRight())/2f,fromView.getTop());
-            point1 = PointPool.obtain(startPoint.x,startPoint.y-DensityUtils.dp2px(context,15));
-            endPoint =  PointPool.obtain((toView.getLeft()+toView.getRight())/2f,toView.getBottom());
-            point2 = PointPool.obtain(endPoint.x,startPoint.y);
+        } else if (holderLayoutType == TreeLayoutManager.LAYOUT_TYPE_VERTICAL_UP) {
+            startPoint = PointPool.obtain((fromView.getLeft() + fromView.getRight()) / 2f, fromView.getTop());
+            point1 = PointPool.obtain(startPoint.x, startPoint.y - DensityUtils.dp2px(context, 15));
+            endPoint = PointPool.obtain((toView.getLeft() + toView.getRight()) / 2f, toView.getBottom());
+            point2 = PointPool.obtain(endPoint.x, startPoint.y);
 
-        }else{
+        } else {
             super.draw(drawInfo);
             return;
         }
@@ -98,19 +98,19 @@ public class SmoothLine extends BaseLine {
         //set paint
         mPaint.setColor(lineColor);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(DensityUtils.dp2px(context,lineWidth));
+        mPaint.setStrokeWidth(DensityUtils.dp2px(context, lineWidth));
         mPaint.setAntiAlias(true);
-        mPath.moveTo(startPoint.x,startPoint.y);
+        mPath.moveTo(startPoint.x, startPoint.y);
         mPath.cubicTo(
-                point1.x,point1.y,
-                point2.x,point2.y,
-                endPoint.x,endPoint.y);
+                point1.x, point1.y,
+                point2.x, point2.y,
+                endPoint.x, endPoint.y);
         //do not forget release
         PointPool.free(startPoint);
         PointPool.free(point1);
         PointPool.free(point2);
         PointPool.free(endPoint);
         //draw
-        canvas.drawPath(mPath,mPaint);
+        canvas.drawPath(mPath, mPaint);
     }
 }

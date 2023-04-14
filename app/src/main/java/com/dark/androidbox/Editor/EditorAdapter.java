@@ -13,9 +13,9 @@ import java.util.ArrayList;
 
 public class EditorAdapter {
 
-    ArrayList<Code> list_data = new ArrayList<>();
     public CodeView txtCode;
     public Context context;
+    ArrayList<Code> list_data = new ArrayList<>();
 
     public EditorAdapter(Context context, CodeView txtCode) {
         this.context = context;

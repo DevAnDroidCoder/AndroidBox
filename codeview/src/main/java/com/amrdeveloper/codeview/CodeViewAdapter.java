@@ -25,7 +25,6 @@
 package com.amrdeveloper.codeview;
 
 import android.content.Context;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,18 +40,58 @@ import java.util.List;
 
 /**
  * Custom base adapter that to use it in CodeView auto complete and snippets feature
- *
+ * <p>
  * CodeViewAdapter supports to take a list of code which can include Keywords and snippets
  *
  * @since 1.1.0
  */
 public class CodeViewAdapter extends BaseAdapter implements Filterable {
 
-    private List<Code> codeList;
-    private List<Code> originalCodes;
     private final LayoutInflater layoutInflater;
     private final int codeViewLayoutId;
     private final int codeViewTextViewId;
+    private List<Code> codeList;
+    private List<Code> originalCodes;
+    private final Filter codeFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+            List<Code> suggestions = new ArrayList<>();
+
+            if (originalCodes == null) {
+                originalCodes = new ArrayList<>(codeList);
+            }
+
+
+            if (constraint == null || constraint.length() == 0) {
+                results.values = originalCodes;
+                results.count = originalCodes.size();
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for (Code item : originalCodes) {
+                    if (item.getCodePrefix().toLowerCase().contains(filterPattern)) {
+                        suggestions.add(item);
+                    }
+                }
+                results.values = suggestions;
+                results.count = suggestions.size();
+            }
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            codeList = (List<Code>) results.values;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public CharSequence convertResultToString(Object resultValue) {
+            return ((Code) resultValue).getCodeBody();
+        }
+    };
 
     public CodeViewAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<Code> codes) {
         this.codeList = codes;
@@ -94,6 +133,7 @@ public class CodeViewAdapter extends BaseAdapter implements Filterable {
 
     /**
      * Update the current code list with new list
+     *
      * @param newCodeList The new code list
      */
     public void updateCodes(List<Code> newCodeList) {
@@ -114,46 +154,5 @@ public class CodeViewAdapter extends BaseAdapter implements Filterable {
     public Filter getFilter() {
         return codeFilter;
     }
-
-    private final Filter codeFilter = new Filter() {
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            FilterResults results = new FilterResults();
-            List<Code> suggestions = new ArrayList<>();
-
-            if (originalCodes == null) {
-                originalCodes = new ArrayList<>(codeList);
-            }
-
-
-            if (constraint == null || constraint.length() == 0) {
-                results.values = originalCodes;
-                results.count = originalCodes.size();
-            } else {
-                String filterPattern = constraint.toString().toLowerCase().trim();
-
-                for (Code item : originalCodes) {
-                    if (item.getCodePrefix().toLowerCase().contains(filterPattern)) {
-                        suggestions.add(item);
-                    }
-                }
-                results.values = suggestions;
-                results.count = suggestions.size();
-            }
-
-            return results;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            codeList = (List<Code>) results.values;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public CharSequence convertResultToString(Object resultValue) {
-            return ((Code) resultValue).getCodeBody();
-        }
-    };
 
 }

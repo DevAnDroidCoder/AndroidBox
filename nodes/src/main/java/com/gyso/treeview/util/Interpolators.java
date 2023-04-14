@@ -15,8 +15,7 @@ import android.view.animation.PathInterpolator;
  * @Time: 2021/6/10  16:24
  * @Email: 674149099@qq.com
  * @WeChat: guaishouN
- * @Describe:
- * Utility class to receive interpolators from
+ * @Describe: Utility class to receive interpolators from
  */
 public class Interpolators {
     public static final Interpolator FAST_OUT_SLOW_IN = new PathInterpolator(0.4f, 0f, 0.2f, 1f);

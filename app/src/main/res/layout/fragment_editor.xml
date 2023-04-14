@@ -9,7 +9,7 @@
     <com.gyso.treeview.GysoTreeView
         android:id="@+id/base_tree_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <com.amrdeveloper.codeview.CodeView
         android:id="@+id/codeTxt"
@@ -18,19 +18,19 @@
         android:dropDownWidth="200dp"
         android:dropDownHorizontalOffset="5dp"
         android:dropDownSelector="#1E1E1E"
-        android:paddingTop="100dp"
+        android:gravity="top|start"
         android:paddingStart="25dp"
-        android:gravity="top|start" />
+        android:paddingTop="100dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/focusMid"
         style="?attr/materialButtonOutlinedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="20dp"
+        android:layout_alignParentTop="true"
         android:layout_marginStart="90dp"
+        android:layout_marginTop="20dp"
         android:text="Focus Mid" />
 
     <com.google.android.material.materialswitch.MaterialSwitch

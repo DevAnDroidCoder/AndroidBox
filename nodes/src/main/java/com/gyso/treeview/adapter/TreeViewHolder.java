@@ -12,13 +12,13 @@ import com.gyso.treeview.model.NodeModel;
  * @Time: 2021/4/23  15:20
  * @Email: 674149099@qq.com
  * @WeChat: guaishouN
- * @Describe:
- * View holder
+ * @Describe: View holder
  */
 public class TreeViewHolder<T> {
     private int holderLayoutType = TreeLayoutManager.LAYOUT_TYPE_NONE;
     private View view;
     private NodeModel<T> node;
+
     public TreeViewHolder(View view, @NonNull NodeModel<T> node) {
         this.view = view;
         this.node = node;
@@ -28,16 +28,16 @@ public class TreeViewHolder<T> {
         return node;
     }
 
+    public void setNode(NodeModel<?> node) {
+        this.node = (NodeModel<T>) node;
+    }
+
     public View getView() {
         return view;
     }
 
     public void setView(View view) {
         this.view = view;
-    }
-
-    public void setNode(NodeModel<?> node) {
-        this.node = (NodeModel<T>)node;
     }
 
     public int getHolderLayoutType() {

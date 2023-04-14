@@ -5,27 +5,6 @@ package com.gyso.treeview.algorithm.force;
  */
 class QuadTree {
     private static final float NULL = -1;
-
-    static class Node {
-        boolean isLeaf;
-        Node[] children;
-        FNode point;
-        float x = NULL;
-        float y = NULL;
-
-        float charge;
-        float pointCharge;
-        float cx, cy;
-
-        Node(boolean isLeaf, Node[] children, FNode point, float x, float y) {
-            this.isLeaf = isLeaf;
-            this.children = children;
-            this.point = point;
-            this.x = x;
-            this.y = y;
-        }
-    }
-
     Node root;
 
     QuadTree() {
@@ -93,9 +72,31 @@ class QuadTree {
         insert(n, node, minX, minY, maxX, maxY);
     }
 
-    /** generate a leaf node for quad tree. */
+    /**
+     * generate a leaf node for quad tree.
+     */
     private Node generateNode() {
         return new Node(true, new Node[4], null, NULL, NULL);
+    }
+
+    static class Node {
+        boolean isLeaf;
+        Node[] children;
+        FNode point;
+        float x = NULL;
+        float y = NULL;
+
+        float charge;
+        float pointCharge;
+        float cx, cy;
+
+        Node(boolean isLeaf, Node[] children, FNode point, float x, float y) {
+            this.isLeaf = isLeaf;
+            this.children = children;
+            this.point = point;
+            this.x = x;
+            this.y = y;
+        }
     }
 
 }

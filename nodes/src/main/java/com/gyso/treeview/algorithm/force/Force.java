@@ -24,15 +24,11 @@ public class Force {
     private static final float DEFAULT_GRAVITY = 0.1f;
     private static final float DEFAULT_THETA = 0.8f;
     private static final float DEFAULT_ALPHA = 0.1f;
-
-    private ForceListener listener;
-
-    private ArrayList<FNode> allNodes;
-    private ArrayList<FLink> allLinks;
-
     ArrayList<FNode> nodes;
     ArrayList<FLink> links;
-
+    private ForceListener listener;
+    private ArrayList<FNode> allNodes;
+    private ArrayList<FLink> allLinks;
     private int width;
     private int height;
     private int distance = DEFAULT_LINK_DISTANCE;
@@ -67,15 +63,15 @@ public class Force {
         return this;
     }
 
+    int getCurrentLevel() {
+        return currentLevel;
+    }
+
     Force setCurrentLevel(int level) {
         this.currentLevel = level;
         resetNodes();
         resetLinks();
         return this;
-    }
-
-    int getCurrentLevel() {
-        return currentLevel;
     }
 
     private void resetNodes() {
@@ -173,8 +169,8 @@ public class Force {
         }
         for (int i = 0; i < nodeCount; i++) {
             FNode node = nodes.get(i);
-            node.x = node.x==-1f?getRandomPosition(width):node.x;
-            node.y = node.y ==-1f? getRandomPosition(height):node.y;
+            node.x = node.x == -1f ? getRandomPosition(width) : node.x;
+            node.y = node.y == -1f ? getRandomPosition(height) : node.y;
             node.px = node.x;
             node.py = node.y;
         }
@@ -229,7 +225,7 @@ public class Force {
         ArrayList<FNode> nodes = this.nodes;
         ArrayList<FLink> links = this.links;
 
-        if ((alpha *= 0.99) < 0.0001/nodes.size()) {
+        if ((alpha *= 0.99) < 0.0001 / nodes.size()) {
             //endTickTask();
             pauseTask();
             return;

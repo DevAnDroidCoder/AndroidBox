@@ -2,12 +2,7 @@ package com.gyso.treeview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RenderNode;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -15,11 +10,10 @@ import android.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.FrameLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.graphics.BitmapCompat;
 
 import com.gyso.treeview.adapter.TreeViewAdapter;
 import com.gyso.treeview.cache_pool.PointPool;
@@ -34,8 +28,7 @@ import com.gyso.treeview.util.TreeViewLog;
  * @Time: 2021/4/29  14:09
  * @Email: 674149099@qq.com
  * @WeChat: guaishouN
- * @Describe:
- * the main tree view.
+ * @Describe: the main tree view.
  */
 public class GysoTreeView extends FrameLayout {
     public static final String TAG = GysoTreeView.class.getSimpleName();
@@ -44,17 +37,17 @@ public class GysoTreeView extends FrameLayout {
     private boolean disallowIntercept = false;
 
     public GysoTreeView(@NonNull Context context) {
-        this(context, null,0);
+        this(context, null, 0);
     }
 
     public GysoTreeView(@NonNull Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
     //private Paint paint = new Paint();
 
     public GysoTreeView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         setClipChildren(false);
         setClipToPadding(false);
         treeViewContainer = new TreeViewContainer(getContext());
@@ -74,54 +67,7 @@ public class GysoTreeView extends FrameLayout {
         //setLayerType(LAYER_TYPE_HARDWARE,paint);
     }
 
-    @Override
-    public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-        super.requestDisallowInterceptTouchEvent(disallowIntercept);
-        this.disallowIntercept = disallowIntercept;
-        TreeViewLog.e(TAG, "requestDisallowInterceptTouchEvent:"+disallowIntercept);
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        TreeViewLog.e(TAG, "onInterceptTouchEvent: "+MotionEvent.actionToString(event.getAction()));
-        return (!disallowIntercept && treeViewGestureHandler.detectInterceptTouchEvent(event)) || super.onInterceptTouchEvent(event);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        TreeViewLog.e(TAG, "onTouchEvent: "+MotionEvent.actionToString(event.getAction()));
-        return !disallowIntercept && treeViewGestureHandler.onTouchEvent(event);
-    }
-    //Bitmap bitmap = null;
-    @Override
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
-    }
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-    }
-
-    @Override
-    protected void dispatchDraw(Canvas canvas) {
-        //canvas.drawRect(100,100,500,500,paint);
-        //bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-        //canvas.saveLayer(0,0,getWidth(),getHeight(),paint);
-        super.dispatchDraw(canvas);
-        //doBlur(bitmap);
-        //canvas.drawBitmap(bitmap,0,0,new Paint());
-        //canvas.restore();
-    }
-
-    private void doBlur(Bitmap bitmap){
-        Bitmap newmap;
-        for (int i = 0; i < 10; i++) {
-            newmap = goBlur(bitmap, 20f, getContext());
-            bitmap = newmap;
-        }
-    }
-
-    public static Bitmap goBlur(Bitmap bitmap,float radius,Context mContext) {
+    public static Bitmap goBlur(Bitmap bitmap, float radius, Context mContext) {
         Log.d(TAG, "goBlur: ");
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -154,27 +100,76 @@ public class GysoTreeView extends FrameLayout {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        treeViewGestureHandler.setViewport(w,h);
+    public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        super.requestDisallowInterceptTouchEvent(disallowIntercept);
+        this.disallowIntercept = disallowIntercept;
+        TreeViewLog.e(TAG, "requestDisallowInterceptTouchEvent:" + disallowIntercept);
     }
 
-    public void setAdapter(TreeViewAdapter adapter) {
-        treeViewContainer.setAdapter(adapter);
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        TreeViewLog.e(TAG, "onInterceptTouchEvent: " + MotionEvent.actionToString(event.getAction()));
+        return (!disallowIntercept && treeViewGestureHandler.detectInterceptTouchEvent(event)) || super.onInterceptTouchEvent(event);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        TreeViewLog.e(TAG, "onTouchEvent: " + MotionEvent.actionToString(event.getAction()));
+        return !disallowIntercept && treeViewGestureHandler.onTouchEvent(event);
+    }
+
+    //Bitmap bitmap = null;
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        //canvas.drawRect(100,100,500,500,paint);
+        //bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        //canvas.saveLayer(0,0,getWidth(),getHeight(),paint);
+        super.dispatchDraw(canvas);
+        //doBlur(bitmap);
+        //canvas.drawBitmap(bitmap,0,0,new Paint());
+        //canvas.restore();
+    }
+
+    private void doBlur(Bitmap bitmap) {
+        Bitmap newmap;
+        for (int i = 0; i < 10; i++) {
+            newmap = goBlur(bitmap, 20f, getContext());
+            bitmap = newmap;
+        }
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        treeViewGestureHandler.setViewport(w, h);
     }
 
     public TreeViewAdapter getAdapter() {
         return treeViewContainer.getAdapter();
     }
 
+    public void setAdapter(TreeViewAdapter adapter) {
+        treeViewContainer.setAdapter(adapter);
+    }
+
     public void setTreeLayoutManager(TreeLayoutManager TreeLayoutManager) {
         treeViewContainer.setTreeLayoutManager(TreeLayoutManager);
     }
 
-    public TreeViewEditor getEditor(){
+    public TreeViewEditor getEditor() {
         return new TreeViewEditor(treeViewContainer);
     }
 
-    public void setTreeViewControlListener(TreeViewControlListener listener){
+    public void setTreeViewControlListener(TreeViewControlListener listener) {
         treeViewGestureHandler.setControlListener(listener);
         treeViewContainer.setControlListener(listener);
     }

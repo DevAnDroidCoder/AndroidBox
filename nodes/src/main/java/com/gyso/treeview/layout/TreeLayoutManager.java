@@ -19,6 +19,7 @@ import com.gyso.treeview.model.TreeModel;
 import com.gyso.treeview.util.DensityUtils;
 import com.gyso.treeview.util.TreeViewLog;
 import com.gyso.treeview.util.ViewBox;
+
 import java.util.Map;
 
 /**
@@ -36,34 +37,27 @@ public abstract class TreeLayoutManager {
     public static final int LAYOUT_TYPE_RING = 5;
     public static final int LAYOUT_TYPE_HORIZON_LEFT_AND_RIGHT = 6;
     public static final int LAYOUT_TYPE_VERTICAL_DOWN_AND_UP = 7;
-
+    public static final int DEFAULT_SPACE_PARENT_CHILD_DP = 50;
+    public static final int DEFAULT_SPACE_PEER_PEER_DP = 20;
+    public static final BaseLine DEFAULT_LINE = new SmoothLine();
     /**
      * the content padding, unit is dp;
      */
     protected static final int DEFAULT_CONTENT_PADDING_DP = 50;
-    public static final int DEFAULT_SPACE_PARENT_CHILD_DP = 50;
-    public static final int DEFAULT_SPACE_PEER_PEER_DP = 20;
-    public static final BaseLine DEFAULT_LINE = new SmoothLine();
-
-
     protected final ViewBox mContentViewBox;
-    protected int spaceParentToChild;
-    protected int spacePeerToPeer;
-
     /**
      * the fixedViewBox means that the fixedViewBox's width/height is the same as the given viewPort's.
      */
     protected final ViewBox fixedViewBox;
-    protected int mFixedDx;
-    protected int mFixedDy;
-
-    protected int extraDeltaX,extraDeltaY;
-
     /**
      * content padding box
      */
     protected final ViewBox paddingBox;
-
+    protected int spaceParentToChild;
+    protected int spacePeerToPeer;
+    protected int mFixedDx;
+    protected int mFixedDy;
+    protected int extraDeltaX, extraDeltaY;
     /**
      * the max value of node in the same floor
      */
@@ -90,12 +84,14 @@ public abstract class TreeLayoutManager {
     private BaseLine baseline;
 
     public TreeLayoutManager(Context context) {
-        this(context, DEFAULT_SPACE_PARENT_CHILD_DP, DEFAULT_SPACE_PEER_PEER_DP,DEFAULT_LINE);
+        this(context, DEFAULT_SPACE_PARENT_CHILD_DP, DEFAULT_SPACE_PEER_PEER_DP, DEFAULT_LINE);
     }
-    public TreeLayoutManager(Context context, int spacePeerToPeer, int spaceParentToChild){
-        this(context, spacePeerToPeer, spaceParentToChild,DEFAULT_LINE);
+
+    public TreeLayoutManager(Context context, int spacePeerToPeer, int spaceParentToChild) {
+        this(context, spacePeerToPeer, spaceParentToChild, DEFAULT_LINE);
     }
-    public TreeLayoutManager(Context context, BaseLine baseline){
+
+    public TreeLayoutManager(Context context, BaseLine baseline) {
         this(context, DEFAULT_SPACE_PARENT_CHILD_DP, DEFAULT_SPACE_PEER_PEER_DP, baseline);
     }
 
@@ -125,11 +121,11 @@ public abstract class TreeLayoutManager {
     }
 
     public void setViewport(int winHeight, int winWidth) {
-        this.winHeight =winHeight;
+        this.winHeight = winHeight;
         this.winWidth = winWidth;
     }
 
-    public abstract void  calculateByLayoutAlgorithm(TreeModel<?> mTreeModel);
+    public abstract void calculateByLayoutAlgorithm(TreeModel<?> mTreeModel);
 
     public abstract void performMeasure(TreeViewContainer treeViewContainer);
 
@@ -139,16 +135,16 @@ public abstract class TreeLayoutManager {
 
     public abstract int getTreeLayoutType();
 
-    public void getPadding(TreeViewContainer treeViewContainer){
-        if(treeViewContainer.getPaddingStart()>0){
+    public void getPadding(TreeViewContainer treeViewContainer) {
+        if (treeViewContainer.getPaddingStart() > 0) {
             paddingBox.setValues(
                     treeViewContainer.getPaddingTop(),
                     treeViewContainer.getPaddingLeft(),
                     treeViewContainer.getPaddingBottom(),
                     treeViewContainer.getPaddingRight());
-        }else{
-            int padding = DensityUtils.dp2px(treeViewContainer.getContext(),DEFAULT_CONTENT_PADDING_DP);
-            paddingBox.setValues(padding,padding,padding,padding);
+        } else {
+            int padding = DensityUtils.dp2px(treeViewContainer.getContext(), DEFAULT_CONTENT_PADDING_DP);
+            paddingBox.setValues(padding, padding, padding, padding);
         }
     }
 
@@ -160,8 +156,8 @@ public abstract class TreeLayoutManager {
      * paint->paint from parent, don't create a new one because the method of onDraw(Canvas canvas) exec too much
      * path->path from parent, same as paint
      */
-    public void performDrawLine(DrawInfo drawInfo){
-        if(baseline!=null){
+    public void performDrawLine(DrawInfo drawInfo) {
+        if (baseline != null) {
             baseline.draw(drawInfo);
             return;
         }
@@ -171,32 +167,33 @@ public abstract class TreeLayoutManager {
 
     /**
      * Prepared animate data for view.
-     * @param currentNode node
-     * @param currentNodeView node view
-     * @param finalLocation node view final position
+     *
+     * @param currentNode       node
+     * @param currentNodeView   node view
+     * @param finalLocation     node view final position
      * @param treeViewContainer container
      * @return true will been means layout animating.
      */
     protected boolean layoutAnimatePrepare(NodeModel<?> currentNode,
                                            View currentNodeView,
                                            ViewBox finalLocation,
-                                           TreeViewContainer treeViewContainer){
+                                           TreeViewContainer treeViewContainer) {
         Object targetNodeTag = treeViewContainer.getTag(R.id.target_node);
-        if(targetNodeTag instanceof NodeModel){
+        if (targetNodeTag instanceof NodeModel) {
             currentNodeView.setTag(R.id.node_final_location, finalLocation);
-            if(targetNodeTag.equals(currentNode)){
-                TreeViewLog.e(TAG,"Get target location!");
+            if (targetNodeTag.equals(currentNode)) {
+                TreeViewLog.e(TAG, "Get target location!");
                 treeViewContainer.setTag(R.id.target_node_final_location, finalLocation);
 
                 //remove views
-                if(!animateRemoveNodes(treeViewContainer, finalLocation)){
+                if (!animateRemoveNodes(treeViewContainer, finalLocation)) {
                     //TODO remove nodes directly
-                    TreeViewLog.e(TAG,"Has remove nodes directly!");
+                    TreeViewLog.e(TAG, "Has remove nodes directly!");
                 }
 
-                Object targetLocationOnViewPortTag =treeViewContainer.getTag(R.id.target_location_on_viewport);
-                if(targetLocationOnViewPortTag instanceof ViewBox){
-                    ViewBox targetLocationOnViewPort=(ViewBox)targetLocationOnViewPortTag;
+                Object targetLocationOnViewPortTag = treeViewContainer.getTag(R.id.target_location_on_viewport);
+                if (targetLocationOnViewPortTag instanceof ViewBox) {
+                    ViewBox targetLocationOnViewPort = (ViewBox) targetLocationOnViewPortTag;
 
                     //fix pre size and location
                     float scale = targetLocationOnViewPort.getWidth() * 1f / finalLocation.getWidth();
@@ -204,8 +201,8 @@ public abstract class TreeLayoutManager {
                     treeViewContainer.setPivotY(0);
                     treeViewContainer.setScaleX(scale);
                     treeViewContainer.setScaleY(scale);
-                    float dx = targetLocationOnViewPort.left-finalLocation.left*scale;
-                    float dy = targetLocationOnViewPort.top-finalLocation.top*scale;
+                    float dx = targetLocationOnViewPort.left - finalLocation.left * scale;
+                    float dy = targetLocationOnViewPort.top - finalLocation.top * scale;
                     treeViewContainer.setTranslationX(dx);
                     treeViewContainer.setTranslationY(dy);
                     return true;
@@ -217,6 +214,7 @@ public abstract class TreeLayoutManager {
 
     /**
      * For layout animator
+     *
      * @param treeViewContainer container
      */
     protected void layoutAnimate(TreeViewContainer treeViewContainer) {
@@ -226,14 +224,14 @@ public abstract class TreeLayoutManager {
         Object targetNodeLocationTag = treeViewContainer.getTag(R.id.target_node_final_location);
         Object relativeLocationMapTag = treeViewContainer.getTag(R.id.relative_locations);
         Object animatorTag = treeViewContainer.getTag(R.id.node_trans_animator);
-        if(animatorTag instanceof ValueAnimator){
-            ((ValueAnimator)animatorTag).end();
+        if (animatorTag instanceof ValueAnimator) {
+            ((ValueAnimator) animatorTag).end();
         }
         if (nodeTag instanceof NodeModel
                 && targetNodeLocationTag instanceof ViewBox
                 && relativeLocationMapTag instanceof Map) {
             ViewBox targetNodeLocation = (ViewBox) targetNodeLocationTag;
-            Map<NodeModel<?>,ViewBox> relativeLocationMap = (Map<NodeModel<?>,ViewBox>)relativeLocationMapTag;
+            Map<NodeModel<?>, ViewBox> relativeLocationMap = (Map<NodeModel<?>, ViewBox>) relativeLocationMapTag;
 
             AccelerateDecelerateInterpolator interpolator = new AccelerateDecelerateInterpolator();
             ValueAnimator valueAnimator = ValueAnimator.ofFloat(0f, 1f);
@@ -248,13 +246,13 @@ public abstract class TreeLayoutManager {
                         View view = treeViewHolder.getView();
                         ViewBox preLocation = (ViewBox) view.getTag(R.id.node_pre_location);
                         ViewBox deltaLocation = (ViewBox) view.getTag(R.id.node_delta_location);
-                        if(preLocation !=null && deltaLocation!=null){
+                        if (preLocation != null && deltaLocation != null) {
                             //calculate current location
                             ViewBox currentLocation = preLocation.add(deltaLocation.multiply(ratio));
                             view.layout(currentLocation.left,
                                     currentLocation.top,
-                                    currentLocation.left+view.getMeasuredWidth(),
-                                    currentLocation.top+view.getMeasuredHeight());
+                                    currentLocation.left + view.getMeasuredWidth(),
+                                    currentLocation.top + view.getMeasuredHeight());
                         }
                     }
                 });
@@ -274,7 +272,7 @@ public abstract class TreeLayoutManager {
                             //calculate location info
                             ViewBox preLocation = targetNodeLocation.add(relativeLocation);
                             ViewBox finalLocation = (ViewBox) view.getTag(R.id.node_final_location);
-                            if(preLocation==null || finalLocation==null){
+                            if (preLocation == null || finalLocation == null) {
                                 return;
                             }
 
@@ -285,7 +283,7 @@ public abstract class TreeLayoutManager {
                             view.setTag(R.id.node_delta_location, deltaLocation);
 
                             //layout on preLocation
-                            view.layout(preLocation.left, preLocation.top, preLocation.left+view.getMeasuredWidth(), preLocation.top+view.getMeasuredHeight());
+                            view.layout(preLocation.left, preLocation.top, preLocation.left + view.getMeasuredWidth(), preLocation.top + view.getMeasuredHeight());
                         }
                     });
 
@@ -299,7 +297,7 @@ public abstract class TreeLayoutManager {
                     treeViewContainer.setTag(R.id.relative_locations, null);
                     treeViewContainer.setTag(R.id.target_node, null);
                     treeViewContainer.setTag(R.id.target_node_final_location, null);
-                    treeViewContainer.setTag(R.id.node_trans_animator,null);
+                    treeViewContainer.setTag(R.id.node_trans_animator, null);
 
                     //layout on finalLocation
                     mTreeModel.doTraversalNodes(node -> {
@@ -307,26 +305,27 @@ public abstract class TreeLayoutManager {
                         if (treeViewHolder != null) {
                             View view = treeViewHolder.getView();
                             ViewBox finalLocation = (ViewBox) view.getTag(R.id.node_final_location);
-                            if(finalLocation!=null){
+                            if (finalLocation != null) {
                                 view.layout(finalLocation.left, finalLocation.top, finalLocation.right, finalLocation.bottom);
                             }
-                            view.setTag(R.id.node_pre_location,null);
-                            view.setTag(R.id.node_delta_location,null);
+                            view.setTag(R.id.node_pre_location, null);
+                            view.setTag(R.id.node_delta_location, null);
                             view.setTag(R.id.node_final_location, null);
                             view.setElevation(TreeViewContainer.Z_NOR);
                         }
                     });
                 }
             });
-            treeViewContainer.setTag(R.id.node_trans_animator,valueAnimator);
+            treeViewContainer.setTag(R.id.node_trans_animator, valueAnimator);
             valueAnimator.start();
         }
     }
 
     /**
      * remove view animate
+     *
      * @param treeViewContainer container
-     * @param targetLocation target location
+     * @param targetLocation    target location
      */
     private boolean animateRemoveNodes(TreeViewContainer treeViewContainer, ViewBox targetLocation) {
         Object removedViewMapTag = treeViewContainer.getTag(R.id.mark_remove_views);
@@ -335,7 +334,7 @@ public abstract class TreeLayoutManager {
 
             final Map<NodeModel<?>, ViewBox> relativeLocationMap = (Map<NodeModel<?>, ViewBox>) relativeLocationMapTag;
             final Map<NodeModel<?>, View> removedViewMap = (Map) removedViewMapTag;
-            int deltaDpMove = DensityUtils.dp2px(treeViewContainer.getContext(),TreeViewContainer.DEFAULT_REMOVE_ANIMATOR_DES);
+            int deltaDpMove = DensityUtils.dp2px(treeViewContainer.getContext(), TreeViewContainer.DEFAULT_REMOVE_ANIMATOR_DES);
 
             ValueAnimator removeAnimator = ValueAnimator.ofFloat(0f, 1f);
             removeAnimator.setDuration(TreeViewContainer.DEFAULT_FOCUS_DURATION);
@@ -344,19 +343,19 @@ public abstract class TreeLayoutManager {
                     View view = removedViewMap.get(nodeToRemove);
                     ViewBox relativeLocation = relativeLocationMap.get(nodeToRemove);
                     ViewBox location = targetLocation.add(relativeLocation);
-                    float v = (float)value.getAnimatedValue();
+                    float v = (float) value.getAnimatedValue();
                     if (getTreeLayoutType() == LAYOUT_TYPE_VERTICAL_DOWN) {
                         view.layout(location.left,
-                                location.top+(int)(deltaDpMove*v),
-                                location.left+view.getMeasuredWidth(),
-                                location.top+view.getMeasuredHeight()+(int)(deltaDpMove*v));
+                                location.top + (int) (deltaDpMove * v),
+                                location.left + view.getMeasuredWidth(),
+                                location.top + view.getMeasuredHeight() + (int) (deltaDpMove * v));
                     } else if (getTreeLayoutType() == LAYOUT_TYPE_HORIZON_RIGHT) {
-                        view.layout(location.left+(int)(deltaDpMove*v),
+                        view.layout(location.left + (int) (deltaDpMove * v),
                                 location.top,
-                                location.left+view.getMeasuredWidth()+(int)(deltaDpMove*v),
-                                location.top+view.getMeasuredHeight());
+                                location.left + view.getMeasuredWidth() + (int) (deltaDpMove * v),
+                                location.top + view.getMeasuredHeight());
                     }
-                    view.setAlpha(1-v);
+                    view.setAlpha(1 - v);
                 }
             });
 
@@ -364,7 +363,7 @@ public abstract class TreeLayoutManager {
                 @Override
                 public void onAnimationStart(Animator animation) {
                     for (NodeModel<?> nodeToRemove : removedViewMap.keySet()) {
-                        TreeViewLog.e(TAG,"removeAnimator onAnimationStart "+nodeToRemove);
+                        TreeViewLog.e(TAG, "removeAnimator onAnimationStart " + nodeToRemove);
                         View view = removedViewMap.get(nodeToRemove);
                         ViewBox relativeLocation = relativeLocationMap.get(nodeToRemove);
                         //calculate location info
@@ -376,7 +375,7 @@ public abstract class TreeLayoutManager {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     for (NodeModel<?> nodeToRemove : removedViewMap.keySet()) {
-                        TreeViewLog.e(TAG,"removeAnimator onAnimationEnd "+nodeToRemove);
+                        TreeViewLog.e(TAG, "removeAnimator onAnimationEnd " + nodeToRemove);
                         View view = removedViewMap.get(nodeToRemove);
                         treeViewContainer.removeView(view);
                         view.setAlpha(1);
@@ -405,22 +404,34 @@ public abstract class TreeLayoutManager {
         return false;
     }
 
-    public void onManagerMeasureNode(NodeModel<?> currentNode,View currentNodeView,ViewBox finalLocation,TreeViewContainer treeViewContainer){}
+    public void onManagerMeasureNode(NodeModel<?> currentNode, View currentNodeView, ViewBox finalLocation, TreeViewContainer treeViewContainer) {
+    }
 
-    public void onManagerFinishMeasureAllNodes(TreeViewContainer treeViewContainer){}
+    public void onManagerFinishMeasureAllNodes(TreeViewContainer treeViewContainer) {
+    }
 
-    public void onManagerLayoutNode(NodeModel<?> currentNode,View currentNodeView,ViewBox finalLocation,TreeViewContainer treeViewContainer){}
+    public void onManagerLayoutNode(NodeModel<?> currentNode, View currentNodeView, ViewBox finalLocation, TreeViewContainer treeViewContainer) {
+    }
 
-    public void onManagerFinishLayoutAllNodes(TreeViewContainer treeViewContainer){}
+    public void onManagerFinishLayoutAllNodes(TreeViewContainer treeViewContainer) {
+    }
 
 
-    public interface  LayoutListener{
-        default void onLayoutChild(NodeModel<?> next){};
+    public interface LayoutListener {
+        default void onLayoutChild(NodeModel<?> next) {
+        }
+
+        ;
+
         void onLayoutFinished();
     }
 
-    public interface  MeasureListener{
-        default void onMeasureChild(NodeModel<?> next){};
+    public interface MeasureListener {
+        default void onMeasureChild(NodeModel<?> next) {
+        }
+
+        ;
+
         void onMeasureFinished();
     }
 }

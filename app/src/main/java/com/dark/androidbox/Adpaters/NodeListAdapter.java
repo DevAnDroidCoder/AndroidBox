@@ -4,10 +4,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.dark.androidbox.Fragments.EditorFragment;
 import com.dark.androidbox.R;
 import com.dark.androidbox.System.NodeEvents;
 import com.google.android.material.button.MaterialButton;
@@ -18,7 +16,7 @@ public class NodeListAdapter extends BaseAdapter {
 
     public ArrayList<String> mData;
 
-    public NodeEvents events ;
+    public NodeEvents events;
 
     public NodeListAdapter(ArrayList<String> data, NodeEvents events) {
         mData = data;
@@ -48,7 +46,7 @@ public class NodeListAdapter extends BaseAdapter {
 
         TextView txt_label = root.findViewById(R.id.label_codeBlock);
 
-        MaterialButton addNode =  root.findViewById(R.id.addNode);
+        MaterialButton addNode = root.findViewById(R.id.addNode);
 
         addNode.setOnClickListener(view -> events.AddNode(mData, position));
 

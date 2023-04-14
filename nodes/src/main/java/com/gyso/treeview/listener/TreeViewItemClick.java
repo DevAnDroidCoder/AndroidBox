@@ -7,5 +7,5 @@ import android.view.View;
  */
 
 public interface TreeViewItemClick {
-     void onItemClick(View item);
+    void onItemClick(View item);
 }

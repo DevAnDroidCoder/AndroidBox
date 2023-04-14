@@ -35,6 +35,7 @@ public interface Findable {
 
     /**
      * Find all the the tokens that matches the regex string and save them on a list
+     *
      * @param regex The regex used to find tokens
      * @return List of the matches Tokens
      */
@@ -42,12 +43,14 @@ public interface Findable {
 
     /**
      * Highlight and return the next token
+     *
      * @return The next matched token, {@code null} if not found
      */
     Token findNextMatch();
 
     /**
      * Highlight and return the previous token
+     *
      * @return The previous matched token, {@code null} if not found
      */
     Token findPrevMatch();

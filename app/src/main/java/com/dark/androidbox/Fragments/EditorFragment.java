@@ -40,7 +40,6 @@ import java.util.ArrayList;
 
 public class EditorFragment extends Fragment implements NodeEvents, TreeViewControlListener, TreeViewNotifier {
 
-    public static String DynamicCode = "";
     public GysoTreeView treeView;
     public TreeViewEditor editor;
     public MaterialButton code, node, focusMid, add;
@@ -50,7 +49,8 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
     public LogicBuilder builder = new LogicBuilder(sampleCode());
 
     public MaterialAlertDialogBuilder dialogBuilder;
-
+    public Editor codeEditor;
+    public AlertDialog basic_dlgBuilder;
     CodeAdapter adapter;
     NodeListAdapter nodesListAdapter;
     TreeLayoutManager treeLayoutManager;
@@ -58,10 +58,6 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
     NodeModel<Codes> rootClass;
     private NodeModel<Codes> parentToRemoveChildren = null;
     private NodeModel<Codes> targetNode;
-
-    public Editor codeEditor;
-
-    public AlertDialog basic_dlgBuilder;
 
     public EditorFragment() {
     }
@@ -91,14 +87,6 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
                 "    public ArrayList<String> getVariables() {\n" +
                 "        return variables;\n" +
                 "   \n";
-    }
-
-    public static String GenVar(StringBuilder varName) {
-        return "public static String " + varName + " = \"\";";
-    }
-
-    public static String GenMethod(StringBuilder methodName) {
-        return "public static String" + methodName + " () { \n\n }";
     }
 
     @Override
@@ -144,9 +132,7 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
         });
 
         node.setOnClickListener(view -> {
-            if (!DynamicCode.equals("")) {
-                CodeToNode(txtCode.getText().toString());
-            }
+            CodeToNode(txtCode.getText().toString());
             txtCode.setVisibility(View.GONE);
             treeView.setVisibility(View.VISIBLE);
         });
@@ -176,8 +162,6 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
         View actionView = LayoutInflater.from(getActivity()).inflate(R.layout.list_view, null);
 
         ListView action_list = actionView.findViewById(R.id.list_actions);
-
-
 
         action_list.setAdapter(nodesListAdapter);
 

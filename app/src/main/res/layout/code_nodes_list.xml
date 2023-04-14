@@ -4,28 +4,28 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:padding="12dp"
     android:layout_margin="12dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="12dp">
 
     <RelativeLayout
         android:id="@+id/head_node"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:background="@drawable/code_node_list_bg"
+        android:elevation="16dp"
+        android:gravity="center"
         android:orientation="horizontal"
         android:paddingVertical="12dp"
-        android:elevation="16dp"
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginEnd="8dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
             android:contentDescription="@string/app_name"
             android:src="@drawable/box" />
 

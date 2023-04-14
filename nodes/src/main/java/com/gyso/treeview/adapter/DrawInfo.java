@@ -3,16 +3,13 @@ package com.gyso.treeview.adapter;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
-import android.graphics.PointF;
 
 /**
  * @Author: 怪兽N
  * @Time: 2021/5/7  21:15
  * @Email: 674149099@qq.com
  * @WeChat: guaishouN
- * @Describe:
- * In order to draw a custom line, there are too many draw info should be passed.
+ * @Describe: In order to draw a custom line, there are too many draw info should be passed.
  * So, this class is estimated to package the draw element that need to draw a colorful line between two nodes.
  */
 public class DrawInfo {
@@ -66,7 +63,7 @@ public class DrawInfo {
     }
 
     public void setFromHolder(TreeViewHolder<?> fromHolder) {
-        this.fromHolder =  fromHolder;
+        this.fromHolder = fromHolder;
     }
 
     public TreeViewHolder<?> getToHolder() {
@@ -93,7 +90,7 @@ public class DrawInfo {
         this.path = path;
     }
 
-    public void setSpace(int spacePeerToPeer,int spaceParentToChild) {
+    public void setSpace(int spacePeerToPeer, int spaceParentToChild) {
         this.spacePeerToPeer = spacePeerToPeer;
         this.spaceParentToChild = spaceParentToChild;
     }

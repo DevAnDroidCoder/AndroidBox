@@ -19,9 +19,9 @@ public class TableKey {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if(obj instanceof TableKey){
-            TableKey o = (TableKey)obj;
-            return floor == o.floor && deep==o.deep;
+        if (obj instanceof TableKey) {
+            TableKey o = (TableKey) obj;
+            return floor == o.floor && deep == o.deep;
         }
         return false;
     }
@@ -29,6 +29,6 @@ public class TableKey {
     @NonNull
     @Override
     public String toString() {
-        return "["+floor+","+deep+"]";
+        return "[" + floor + "," + deep + "]";
     }
 }

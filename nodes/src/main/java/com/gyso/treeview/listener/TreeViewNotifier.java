@@ -10,10 +10,14 @@ import com.gyso.treeview.model.NodeModel;
  * @WeChat: guaishouN
  * @Describe:
  */
-public interface TreeViewNotifier{
+public interface TreeViewNotifier {
     void onDataSetChange();
-    void onRemoveNode(NodeModel<?>nodeModel);
+
+    void onRemoveNode(NodeModel<?> nodeModel);
+
     void onRemoveChildNodes(NodeModel<?> parentNode);
+
     void onItemViewChange(NodeModel<?> nodeModel);
+
     void onAddNodes(NodeModel<?> parent, NodeModel<?>... childNodes);
 }
