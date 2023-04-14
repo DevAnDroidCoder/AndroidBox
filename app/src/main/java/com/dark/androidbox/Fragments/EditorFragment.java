@@ -2,25 +2,28 @@ package com.dark.androidbox.Fragments;
 
 import static com.dark.androidbox.Utilities.DarkUtilities.ShowMessage;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.amrdeveloper.codeview.CodeView;
 import com.dark.androidbox.Adpaters.CodeAdapter;
-import com.dark.androidbox.Adpaters.Codes;
-import com.dark.androidbox.Managers.CodeManager.DataTypesManager;
-import com.dark.androidbox.Managers.CodeManager.ObjManager;
-import com.dark.androidbox.Managers.CodeManager.Types;
+import com.dark.androidbox.Adpaters.NodeListAdapter;
+import com.dark.androidbox.Editor.Codes;
+import com.dark.androidbox.Editor.Editor;
 import com.dark.androidbox.R;
-import com.dark.androidbox.Services.codeEditor.Editor;
 import com.dark.androidbox.System.NodeEvents;
 import com.dark.androidbox.builder.LogicBuilder;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.gyso.treeview.GysoTreeView;
 import com.gyso.treeview.TreeViewEditor;
@@ -28,23 +31,28 @@ import com.gyso.treeview.layout.TableRightTreeLayoutManager;
 import com.gyso.treeview.layout.TreeLayoutManager;
 import com.gyso.treeview.line.BaseLine;
 import com.gyso.treeview.line.SmoothLine;
+import com.gyso.treeview.listener.TreeViewControlListener;
+import com.gyso.treeview.listener.TreeViewNotifier;
 import com.gyso.treeview.model.NodeModel;
 import com.gyso.treeview.model.TreeModel;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
-public class EditorFragment extends Fragment implements NodeEvents {
+public class EditorFragment extends Fragment implements NodeEvents, TreeViewControlListener, TreeViewNotifier {
 
     public static String DynamicCode = "";
     public GysoTreeView treeView;
     public TreeViewEditor editor;
-    public MaterialButton code, node, focusMid;
+    public MaterialButton code, node, focusMid, add;
 
     public CodeView txtCode;
     public MaterialSwitch dragLock;
     public LogicBuilder builder = new LogicBuilder(sampleCode());
 
+    public MaterialAlertDialogBuilder dialogBuilder;
+
     CodeAdapter adapter;
+    NodeListAdapter nodesListAdapter;
     TreeLayoutManager treeLayoutManager;
     TreeModel<Codes> treeModel;
     NodeModel<Codes> rootClass;
@@ -52,6 +60,8 @@ public class EditorFragment extends Fragment implements NodeEvents {
     private NodeModel<Codes> targetNode;
 
     public Editor codeEditor;
+
+    public AlertDialog basic_dlgBuilder;
 
     public EditorFragment() {
     }
@@ -108,6 +118,8 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
         focusMid = root.findViewById(R.id.focusMid);
 
+        add = root.findViewById(R.id.add);
+
         dragLock = root.findViewById(R.id.drag);
 
         initNODE();
@@ -143,6 +155,57 @@ public class EditorFragment extends Fragment implements NodeEvents {
             editor.focusMidLocation();
         });
 
+        add.setOnClickListener(view -> NodeList());
+
+    }
+
+    public void NodeList() {
+        dialogBuilder = new MaterialAlertDialogBuilder(getActivity());
+
+        ArrayList<String> data = new ArrayList<>();
+
+        data.add("Class");
+        data.add("String");
+        data.add("Void");
+        data.add("int");
+        data.add("Enum");
+        data.add("Interface");
+
+        nodesListAdapter = new NodeListAdapter(data, this);
+
+        View actionView = LayoutInflater.from(getActivity()).inflate(R.layout.list_view, null);
+
+        ListView action_list = actionView.findViewById(R.id.list_actions);
+
+
+
+        action_list.setAdapter(nodesListAdapter);
+
+        dialogBuilder.setView(action_list);
+
+        dialogBuilder.setTitle("Nodes List")
+                .setMessage("Choose Nodes From Here")
+                .setCancelable(true)
+                .setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        basic_dlgBuilder.dismiss();
+                    }
+                });
+
+        basic_dlgBuilder = dialogBuilder.show();
+    }
+
+    @Override
+    public void AddNode(ArrayList<String> data, int i) {
+        treeModel = new TreeModel<>(rootClass);
+
+        NodeModel<Codes> funNode = new NodeModel<>(new Codes(i, data.get(i), new StringBuilder("")));
+        treeModel.addNode(rootClass, funNode);
+
+        adapter.setTreeModel(treeModel);
+
+        basic_dlgBuilder.dismiss();
     }
 
     public void initNODE() {
@@ -200,29 +263,29 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
     @Override
     public void NodeOnClick(int id) {
-        if (id == 0) {
-            StringBuilder data = builder.ObjectGenerator(new ObjManager(new StringBuilder("MyClass"), Types.ObjTypes.Class));
-
-            NodeModel<Codes> classSample2 = new NodeModel<>(new Codes(1, new LogicBuilder(data.toString()).getClasses().get(0), data));
-
-            treeModel.addNode(rootClass, classSample2);
-            adapter.setTreeModel(treeModel);
-
-        } else {
-            if (id == 1) {
-                StringBuilder data = builder.ObjectGenerator(new DataTypesManager(
-                        new StringBuilder("newString"),
-                        Types.VisibilityTypes.Public,
-                        Types.DataTypes.String));
-
-                ShowMessage(getContext(), data);
-
-                NodeModel<Codes> classSample2 = new NodeModel<>(new Codes(1, new LogicBuilder(data.toString()).getVariables().get(0), data));
-
-                treeModel.addNode(rootClass, classSample2);
-                adapter.setTreeModel(treeModel);
-            }
-        }
+//        if (id == 0) {
+//            StringBuilder data = builder.ObjectGenerator(new ObjManager(new StringBuilder("MyClass"), Types.ObjTypes.Class));
+//
+//            NodeModel<Codes> classSample2 = new NodeModel<>(new Codes(1, new LogicBuilder(data.toString()).getClasses().get(0), data, Types.ObjTypes.Class.name()));
+//
+//            treeModel.addNode(rootClass, classSample2);
+//            adapter.setTreeModel(treeModel);
+//
+//        } else {
+//            if (id == 1) {
+//                StringBuilder data = builder.ObjectGenerator(new DataTypesManager(
+//                        new StringBuilder("newString"),
+//                        Types.VisibilityTypes.Public,
+//                        Types.DataTypes.String));
+//
+//                ShowMessage(getContext(), data);
+//
+//                NodeModel<Codes> classSample2 = new NodeModel<>(new Codes(1, new LogicBuilder(data.toString()).getVariables().get(0), data));
+//
+//                treeModel.addNode(rootClass, classSample2);
+//                adapter.setTreeModel(treeModel);
+//            }
+//        }
     }
 
     public void CodeToNode(String code) {
@@ -268,5 +331,39 @@ public class EditorFragment extends Fragment implements NodeEvents {
 
     public String NodeToCode() {
         return rootClass.value.data.toString();
+    }
+
+    @Override
+    public void onScaling(int state, int percent) {
+
+    }
+
+    @Override
+    public void onDragMoveNodesHit(@Nullable NodeModel<?> draggingNode, @Nullable NodeModel<?> hittingNode, @Nullable View draggingView, @Nullable View hittingView) {
+
+    }
+
+    @Override
+    public void onDataSetChange() {
+
+    }
+
+    @Override
+    public void onRemoveNode(NodeModel<?> nodeModel) {
+
+    }
+
+    @Override
+    public void onRemoveChildNodes(NodeModel<?> parentNode) {
+
+    }
+
+    @Override
+    public void onItemViewChange(NodeModel<?> nodeModel) {
+    }
+
+    @Override
+    public void onAddNodes(NodeModel<?> parent, NodeModel<?>... childNodes) {
+
     }
 }

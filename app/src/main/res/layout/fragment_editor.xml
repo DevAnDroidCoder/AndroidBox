@@ -49,7 +49,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="120dp"
         app:checkedButton="@id/node"
         app:singleSelection="true"
         tools:ignore="RelativeOverlap">
@@ -68,13 +68,17 @@
             android:layout_height="wrap_content"
             android:text="Node" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/preview"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Preview" />
-
     </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/add"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="Add" />
 
 </RelativeLayout>

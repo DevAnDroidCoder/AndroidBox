@@ -4,6 +4,7 @@
     android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:background="@drawable/code_node_bg"
+    android:layout_gravity="center"
     android:elevation="16dp"
     android:orientation="vertical">
 
@@ -88,7 +89,6 @@
                 app:strokeWidth="2dp" />
         </RelativeLayout>
     </LinearLayout>
-
 
     <TextView
         android:id="@+id/node_id"

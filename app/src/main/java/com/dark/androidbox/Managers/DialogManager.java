@@ -10,7 +10,8 @@ import androidx.appcompat.app.AlertDialog;
 import com.dark.androidbox.Adpaters.ActionList;
 import com.dark.androidbox.Fragments.SetUpScreenOne;
 import com.dark.androidbox.R;
-import com.dark.androidbox.System.Actions;
+import com.dark.androidbox.StartUp.ActionRunner;
+import com.dark.androidbox.StartUp.Actions;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
