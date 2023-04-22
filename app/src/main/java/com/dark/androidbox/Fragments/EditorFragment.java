@@ -73,8 +73,6 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
                 "public class JavaCodeParser extends Fragment implements NodeEvents, Data, Events {\n" +
                 "    private String codeString;\n" +
                 "    private ArrayList<String> classes;\n" +
-                "    private ArrayList<String> functions;\n" +
-                "    private ArrayList<String> variables;\n" +
                 "    \n" +
                 "    public JavaCodeParser(String codeString) {\n" +
                 "        this.codeString = codeString;\n" +
