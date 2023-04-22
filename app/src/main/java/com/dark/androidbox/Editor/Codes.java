@@ -6,12 +6,13 @@ public class Codes {
 
     public StringBuilder data;
 
-    public String type;
+    public int type;
 
-    public Codes(int itemId, String label, StringBuilder data) {
+    public Codes(int type, int itemId, String label, StringBuilder data) {
         this.itemId = itemId;
         this.label = label;
         this.data = data;
+        this.type = type;
     }
 
     @Override
@@ -21,5 +22,9 @@ public class Codes {
 
     public int getItemId() {
         return itemId;
+    }
+
+    public void writeData(StringBuilder data){
+        this.data = data;
     }
 }

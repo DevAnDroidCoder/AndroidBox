@@ -20,15 +20,18 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.customview.widget.ViewDragHelper;
 
+import com.google.android.material.textview.MaterialTextView;
 import com.gyso.treeview.adapter.DrawInfo;
 import com.gyso.treeview.adapter.TreeViewAdapter;
 import com.gyso.treeview.adapter.TreeViewHolder;
 import com.gyso.treeview.cache_pool.HolderPool;
 import com.gyso.treeview.cache_pool.PointPool;
+import com.gyso.treeview.events.NodeEventManager;
 import com.gyso.treeview.layout.TreeLayoutManager;
 import com.gyso.treeview.line.BaseLine;
 import com.gyso.treeview.listener.TreeViewControlListener;
@@ -80,6 +83,7 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
     private boolean isAnimateAdd;
     private boolean isAnimateMove;
     private TreeViewControlListener controlListener = null;
+
     private final ViewDragHelper.Callback dragCallback = new ViewDragHelper.Callback() {
         @Override
         public boolean tryCaptureView(@NonNull View child, int pointerId) {
@@ -132,9 +136,12 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
             }
         }
 
+        @SuppressLint("ResourceType")
         @Override
         public void onViewReleased(@NonNull View releasedChild, float xvel, float yvel) {
-            TreeViewLog.d(TAG, "onViewReleased: ");
+
+            controlListener.onDropNode(releasedChild);
+
             Object fTag = releasedChild.getTag(R.id.the_hit_target);
             boolean getHit = fTag != null;
             if (getHit) {
@@ -143,15 +150,34 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
 
                 TreeViewHolder<?> releasedChildHolder = (TreeViewHolder<?>) releasedChild.getTag(R.id.item_holder);
                 NodeModel<?> releasedChildHolderNode = releasedChildHolder.getNode();
-                if (releasedChildHolderNode.getParentNode() != null) {
-                    mTreeModel.removeNode(releasedChildHolderNode.getParentNode(), releasedChildHolderNode);
+
+                View child = targetHolder.getView();
+
+                for (int i = 0; i < ((ViewGroup) child).getChildCount(); i++) {
+                    View childView = ((ViewGroup) child).getChildAt(i);
+                    if (childView instanceof MaterialTextView) {
+                        int typeInfoDataText = Integer.parseInt(((TextView) childView).getText().toString());
+
+                        if (typeInfoDataText == 2) {
+
+                            drawDragBackGround(releasedChild);
+                            dragBlock.smoothRecover(releasedChild);
+
+                        } else {
+
+                            if (releasedChildHolderNode.getParentNode() != null) {
+                                mTreeModel.removeNode(releasedChildHolderNode.getParentNode(), releasedChildHolderNode);
+                            }
+                            mTreeModel.addNode(targetHolderNode, releasedChildHolderNode);
+                            mTreeLayoutManager.calculateByLayoutAlgorithm(mTreeModel);
+                            if (isAnimateMove()) {
+                                recordAnchorLocationOnViewPort(false, false, targetHolderNode);
+                            }
+                            requestLayout();
+
+                        }
+                    }
                 }
-                mTreeModel.addNode(targetHolderNode, releasedChildHolderNode);
-                mTreeLayoutManager.calculateByLayoutAlgorithm(mTreeModel);
-                if (isAnimateMove()) {
-                    recordAnchorLocationOnViewPort(false, false, targetHolderNode);
-                }
-                requestLayout();
             } else {
                 //recover
                 dragBlock.smoothRecover(releasedChild);
@@ -475,6 +501,7 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
                     //hit listener
                     if (controlListener != null) {
                         Object srcViewHolderTag = srcView.getTag(R.id.item_holder);
+
                         if (srcViewHolderTag instanceof TreeViewHolder) {
                             controlListener.onDragMoveNodesHit(((TreeViewHolder<?>) srcViewHolderTag).getNode(), next, srcView, holder.getView());
                         }
@@ -494,6 +521,59 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
         boolean getHit = fTag != null;
         if (getHit) {
             //draw
+
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View childView = ((ViewGroup) view).getChildAt(i);
+                if (childView instanceof MaterialTextView) {
+                    int typeInfoDataText = Integer.parseInt(((TextView) childView).getText().toString());
+                    Log.d("Blocks Data >> ", "" + typeInfoDataText);
+
+                    if (isValidNode(typeInfoDataText)){
+                        double srcR = Math.hypot(view.getWidth(), view.getHeight());
+                        TreeViewHolder<?> holder = getTreeViewHolder((NodeModel) fTag);
+                        View targetView = holder.getView();
+                        double tarR = Math.hypot(targetView.getWidth(), targetView.getHeight());
+                        float minGap = Math.min(mTreeLayoutManager.getSpacePeerToPeer(), mTreeLayoutManager.getSpaceParentToChild());
+                        double fR = minGap / getScaleX() + Math.max(srcR, tarR) / 2;
+
+                        mPaint.reset();
+                        mPaint.setColor(Color.parseColor("#61ff8b"));
+                        mPaint.setStyle(Paint.Style.STROKE);
+                        mPaint.setStrokeWidth(14);
+                        PointF centerPoint = getCenterPoint(view);
+                        // drawInfo.getCanvas().drawCircle(centerPoint.x,centerPoint.y,(float)fR,mPaint);
+                        int size = 50;
+
+                        float left = view.getLeft() - size;
+                        float top = view.getTop() - size;
+                        float right = view.getRight() + size;
+                        float bottom = view.getBottom() + size;
+                        float rx = 30;
+                        float ry = 30;
+
+                        drawInfo.getCanvas().drawRoundRect(left, top, right, bottom, rx, ry, mPaint);
+                        PointPool.free(centerPoint);
+                    }
+                    else {
+                        drawDragBackGroundError(view);
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean isValidNode(int input) {
+        boolean b = true;
+        if(!(input == 2 || input == 3))
+            b = false;
+        return b;
+    }
+
+    private void drawDragBackGroundError(View view) {
+        Object fTag = view.getTag(R.id.the_hit_target);
+        boolean getHit = fTag != null;
+        if (getHit) {
+            //draw
             double srcR = Math.hypot(view.getWidth(), view.getHeight());
             TreeViewHolder<?> holder = getTreeViewHolder((NodeModel) fTag);
             View targetView = holder.getView();
@@ -502,16 +582,18 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
             double fR = minGap / getScaleX() + Math.max(srcR, tarR) / 2;
 
             mPaint.reset();
-            mPaint.setColor(Color.parseColor("#4FF1286C"));
+            mPaint.setColor(Color.parseColor("#FFFF3546"));
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStrokeWidth(14);
             PointF centerPoint = getCenterPoint(view);
-            Log.d("FR Val", String.valueOf(fR));
             // drawInfo.getCanvas().drawCircle(centerPoint.x,centerPoint.y,(float)fR,mPaint);
-            float left = view.getLeft() - 100;
-            float top = view.getTop() - 100;
-            float right = view.getRight() + 100;
-            float bottom = view.getBottom() + 100;
+
+            int size = 50;
+
+            float left = view.getLeft() - size;
+            float top = view.getTop() - size;
+            float right = view.getRight() + size;
+            float bottom = view.getBottom() + size;
             float rx = 30;
             float ry = 30;
 

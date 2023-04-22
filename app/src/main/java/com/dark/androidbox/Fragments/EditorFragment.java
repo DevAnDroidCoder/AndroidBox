@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -25,20 +26,21 @@ import com.dark.androidbox.builder.LogicBuilder;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.textview.MaterialTextView;
 import com.gyso.treeview.GysoTreeView;
 import com.gyso.treeview.TreeViewEditor;
+import com.gyso.treeview.adapter.TreeViewHolder;
 import com.gyso.treeview.layout.TableRightTreeLayoutManager;
 import com.gyso.treeview.layout.TreeLayoutManager;
 import com.gyso.treeview.line.BaseLine;
 import com.gyso.treeview.line.SmoothLine;
 import com.gyso.treeview.listener.TreeViewControlListener;
-import com.gyso.treeview.listener.TreeViewNotifier;
 import com.gyso.treeview.model.NodeModel;
 import com.gyso.treeview.model.TreeModel;
 
 import java.util.ArrayList;
 
-public class EditorFragment extends Fragment implements NodeEvents, TreeViewControlListener, TreeViewNotifier {
+public class EditorFragment extends Fragment implements NodeEvents, TreeViewControlListener {
 
     public GysoTreeView treeView;
     public TreeViewEditor editor;
@@ -86,7 +88,8 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
                 "    }\n" +
                 "    public ArrayList<String> getVariables() {\n" +
                 "        return variables;\n" +
-                "   \n";
+                "    }\n" +
+                "}";
     }
 
     @Override
@@ -112,6 +115,8 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
 
         initNODE();
         Logic();
+
+        dragLock.setChecked(true);
 
         return root;
     }
@@ -184,7 +189,7 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
     public void AddNode(ArrayList<String> data, int i) {
         treeModel = new TreeModel<>(rootClass);
 
-        NodeModel<Codes> funNode = new NodeModel<>(new Codes(i, data.get(i), new StringBuilder("")));
+        NodeModel<Codes> funNode = new NodeModel<>(new Codes(1, i, data.get(i), new StringBuilder("public static void getYourName() { \n\n }")));
         treeModel.addNode(rootClass, funNode);
 
         adapter.setTreeModel(treeModel);
@@ -205,6 +210,8 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
         editor = treeView.getEditor();
 
         dragLock.setOnCheckedChangeListener((btn, b) -> editor.requestMoveNodeByDragging(b));
+
+        treeView.setTreeViewControlListener(this);
     }
 
     private TreeLayoutManager getTreeLayoutManager() {
@@ -274,20 +281,22 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
 
     public void CodeToNode(String code) {
 
+        //Setting Up The Raw Code
         LogicBuilder classBuilder = new LogicBuilder(code);
 
         if (classBuilder.getClasses().size() != 0) {
-            rootClass = new NodeModel<>(new Codes(0, new LogicBuilder(code).getClasses().get(0), new StringBuilder(code)));
+            rootClass = new NodeModel<>(new Codes(0, 0, new LogicBuilder(code).getClasses().get(0), new StringBuilder(code)));
             treeModel = new TreeModel<>(rootClass);
         } else {
             ShowMessage(getContext(), new StringBuilder("No Class Found"));
         }
 
+
+        //Setting Up Functions
         if (classBuilder.getFunctions().size() != 0) {
 
             for (int i = 0; i < classBuilder.getFunctions().size(); i++) {
-                NodeModel<Codes> funNode =
-                        new NodeModel<>(new Codes(i + 1, classBuilder.getFunctions().get(i), new StringBuilder(classBuilder.getFunctionInfo(classBuilder.getFunctions().get(i)))));
+                NodeModel<Codes> funNode = new NodeModel<>(new Codes(1, i + 1, classBuilder.getFunctions().get(i), new StringBuilder(classBuilder.getFunctionInfo(classBuilder.getFunctions().get(i)))));
 
                 treeModel.addNode(rootClass, funNode);
             }
@@ -295,21 +304,23 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
             ShowMessage(getContext(), new StringBuilder("No Function Found"));
         }
 
+        //Setting Up Variables
         if (classBuilder.getVariables().size() != 0) {
 
             for (int i = 0; i < classBuilder.getVariables().size(); i++) {
-                NodeModel<Codes> funNode =
-                        new NodeModel<>(new Codes(i + 1, builder.getVariables().get(i), new StringBuilder(builder.getVariablesCode().get(i))));
+                NodeModel<Codes> varNode = new NodeModel<>(new Codes(2, i + 1, builder.getVariables().get(i), new StringBuilder(builder.getVariablesCode().get(i))));
 
-                treeModel.addNode(rootClass, funNode);
+                treeModel.addNode(rootClass, varNode);
             }
         } else {
             ShowMessage(getContext(), new StringBuilder("No Variable Found"));
         }
+
+        //Setting The Node Data
         parentToRemoveChildren = rootClass;
         targetNode = rootClass.getChildNodes().get(0);
 
-        //set data
+        //Allotting Data
         adapter.setTreeModel(treeModel);
     }
 
@@ -324,30 +335,66 @@ public class EditorFragment extends Fragment implements NodeEvents, TreeViewCont
 
     @Override
     public void onDragMoveNodesHit(@Nullable NodeModel<?> draggingNode, @Nullable NodeModel<?> hittingNode, @Nullable View draggingView, @Nullable View hittingView) {
-
+        NodeModel<Codes> da = (NodeModel<Codes>) draggingNode;
+        ShowMessage(getContext(), new StringBuilder(da.value.label));
     }
 
     @Override
-    public void onDataSetChange() {
+    public void onDropNode(View view) {
 
+        Object fTag = view.getTag(com.gyso.treeview.R.id.the_hit_target);
+        boolean getHit = fTag != null;
+
+        TreeViewHolder<Codes> targetHolder = (TreeViewHolder<Codes>) treeView.treeViewContainer.getTreeViewHolder((NodeModel) fTag);
+        NodeModel<Codes> targetHolderNode = targetHolder.getNode();
+
+        TreeViewHolder<Codes> releasedChildHolder = (TreeViewHolder<Codes>) view.getTag(com.gyso.treeview.R.id.item_holder);
+        NodeModel<Codes> releasedChildHolderNode = releasedChildHolder.getNode();
+
+
+        if (getHit) {
+            View child = targetHolder.getView();
+
+            for (int i = 0; i < ((ViewGroup) child).getChildCount(); i++) {
+                View childView = ((ViewGroup) child).getChildAt(i);
+                if (childView instanceof MaterialTextView) {
+                    int typeInfoDataText = Integer.parseInt(((TextView) childView).getText().toString());
+
+                    if (typeInfoDataText == 2)
+                        //Node Is Not Merge
+                        ShowMessage(getContext(), new StringBuilder(releasedChildHolderNode.value.label));
+                    else
+                        //Node Is Merge
+                        NodeMerge(targetHolderNode, releasedChildHolderNode);
+
+                }
+            }
+        }
     }
 
-    @Override
-    public void onRemoveNode(NodeModel<?> nodeModel) {
+    public void NodeMerge(NodeModel<Codes> target, NodeModel<Codes> released) {
 
-    }
+        LogicBuilder targetLogic = new LogicBuilder(target.value.data.toString());
+        LogicBuilder releasedLogic = new LogicBuilder(released.value.data.toString());
+        LogicBuilder classBuilder = new LogicBuilder(rootClass.value.data.toString());
+        
+        StringBuilder targetData = target.value.data;
+        StringBuilder releasedData = released.value.data;
 
-    @Override
-    public void onRemoveChildNodes(NodeModel<?> parentNode) {
+        int targetNodeType = target.value.type;
+        int releasedNodeType = released.value.type;
 
-    }
+        if (targetNodeType != 2 && targetNodeType != 3){
+            if (targetNodeType == 0 && releasedNodeType == 1){
+                if (!classBuilder.getFunctions().contains(releasedLogic.getFunctions().get(0))){
 
-    @Override
-    public void onItemViewChange(NodeModel<?> nodeModel) {
-    }
+                    String cacheClass = target.value.data.toString();
+                    cacheClass = cacheClass.substring(0, cacheClass.length() - 1);
 
-    @Override
-    public void onAddNodes(NodeModel<?> parent, NodeModel<?>... childNodes) {
+                    target.value.writeData(new StringBuilder(cacheClass + "\n" + released.value.data + "\n}"));
+                }
+            }
+        }
 
     }
 }

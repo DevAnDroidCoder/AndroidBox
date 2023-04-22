@@ -21,4 +21,6 @@ public interface TreeViewControlListener {
     void onScaling(int state, int percent);
 
     void onDragMoveNodesHit(@Nullable NodeModel<?> draggingNode, @Nullable NodeModel<?> hittingNode, @Nullable View draggingView, @Nullable View hittingView);
+
+    void onDropNode(View view);
 }

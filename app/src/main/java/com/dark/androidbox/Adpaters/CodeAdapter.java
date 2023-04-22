@@ -24,6 +24,7 @@ import com.dark.androidbox.System.NodeEvents;
 import com.dark.androidbox.builder.LogicBuilder;
 import com.dark.androidbox.databinding.CodeNodesBinding;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textview.MaterialTextView;
 import com.gyso.treeview.TreeViewEditor;
 import com.gyso.treeview.adapter.DrawInfo;
 import com.gyso.treeview.adapter.TreeViewAdapter;
@@ -69,7 +70,7 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
 
         TextView txt_info = items.findViewById(R.id.txt_info);
 
-        TextView node_id = items.findViewById(R.id.node_id);
+        MaterialTextView node_id = items.findViewById(R.id.node_id);
 
         MaterialButton delNode = items.findViewById(R.id.delNode);
 
@@ -127,7 +128,7 @@ public class CodeAdapter extends TreeViewAdapter<Codes> {
                 }
             }
         }
-        node_id.setText("Node -> ".concat(String.valueOf(blockData.getItemId())));
+        node_id.setText("" + blockData.type);
 
         Log.d("System Info", String.valueOf(new LogicBuilder(EditorFragment.sampleCode()).objType));
     }
