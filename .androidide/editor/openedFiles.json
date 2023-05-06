@@ -1,35 +1,20 @@
 {
   "allFiles": [
     {
-      "file": "/storage/emulated/0/AndroidIDEProjects/AndroidBox/app/src/main/res/layout/code_nodes.xml",
+      "file": "/storage/emulated/0/.GitHub/AndroidBox/.gitignore",
       "selection": {
         "end": {
-          "column": 36,
+          "column": 11,
           "index": -1,
-          "line": 6
+          "line": 27
         },
         "start": {
-          "column": 36,
+          "column": 11,
           "index": -1,
-          "line": 6
-        }
-      }
-    },
-    {
-      "file": "/storage/emulated/0/AndroidIDEProjects/AndroidBox/app/src/main/res/drawable/code_node_bg.xml",
-      "selection": {
-        "end": {
-          "column": 0,
-          "index": -1,
-          "line": 13
-        },
-        "start": {
-          "column": 0,
-          "index": -1,
-          "line": 13
+          "line": 27
         }
       }
     }
   ],
-  "selectedFile": "/storage/emulated/0/AndroidIDEProjects/AndroidBox/app/src/main/res/layout/code_nodes.xml"
+  "selectedFile": "/storage/emulated/0/.GitHub/AndroidBox/.gitignore"
 }

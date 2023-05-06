@@ -5,6 +5,8 @@ plugins {
 android {
     namespace 'com.dark.androidbox'
     compileSdk 33
+	buildToolsVersion "33.0.2"
+    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "com.dark.androidbox"
@@ -34,16 +36,16 @@ android {
 
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation "androidx.appcompat:appcompat:1.6.1"
 
-    implementation project(path: ':codeview')
+    implementation project(path: ":codeview")
 
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation 'com.github.javaparser:javaparser-core:3.25.1'
+    implementation "com.google.android.material:material:1.8.0"
+    implementation "com.github.javaparser:javaparser-core:3.25.1"
 
-    implementation project(path: ':nodes')
+    implementation project(path: ":nodes")
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    testImplementation "junit:junit:4.13.2"
+    androidTestImplementation "androidx.test.ext:junit:1.1.5"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
 }
